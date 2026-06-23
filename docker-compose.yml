@@ -17,9 +17,9 @@ services:
 
   repointel-facade:
     build:
-      context: ../../generated/repointel
-      dockerfile: ../../projects/repointel-metadata-collection/Dockerfile.repointel
-    image: repointel-facade:local
+      context: .
+      dockerfile: Dockerfile.repointel
+    image: ghcr.io/tshephard-ca/repo-intel/repointel-facade:${REPO_INTEL_IMAGE_TAG:-latest}
     environment:
       REPOINTEL_STORAGE: postgres
       REPOINTEL_DATABASE_URL: postgres://repointel:${REPOINTEL_POSTGRES_PASSWORD:-repointel}@postgres:5432/repointel
@@ -40,7 +40,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: repointel-metadata-facade:local
+    image: ghcr.io/tshephard-ca/repo-intel/metadata-facade:${REPO_INTEL_IMAGE_TAG:-latest}
     environment:
       METADATA_COLLECTION_DATA_DIR: /data/metadata-collection
       METADATA_COLLECTION_BASE_URL: http://metadata-facade:18080
@@ -67,7 +67,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.gateway
-    image: repointel-metadata-gateway:local
+    image: ghcr.io/tshephard-ca/repo-intel/gateway:${REPO_INTEL_IMAGE_TAG:-latest}
     environment:
       REPOINTEL_DEBUG_UI_HOST: 0.0.0.0
       PORT: 18110
@@ -85,7 +85,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.gateway
-    image: repointel-metadata-gateway:local
+    image: ghcr.io/tshephard-ca/repo-intel/gateway:${REPO_INTEL_IMAGE_TAG:-latest}
     command: ["node", "ux/server.mjs", "--analytics-provider"]
     environment:
       REPOINTEL_DEBUG_UI_HOST: 0.0.0.0
@@ -104,7 +104,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.szz-provider
-    image: repointel-metadata-szz-provider:local
+    image: ghcr.io/tshephard-ca/repo-intel/szz-provider:${REPO_INTEL_IMAGE_TAG:-latest}
     environment:
       HOST: 0.0.0.0
       PORT: 18195

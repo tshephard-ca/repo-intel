@@ -4,6 +4,7 @@
 analysis_artifacts
 artifacts
 generated/target
+generated/repointel/target
 target
 **/__pycache__
 **/*.pyc

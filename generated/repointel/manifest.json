@@ -1,0 +1,1071 @@
+{
+  "namespace": "repointel.facade",
+  "service": "RepointelFacade",
+  "routes": [
+    { "operation": "ListRepositoryGroups", "method": "GET", "path": "/repository-groups", "status": 200, "auth_required": true },
+    { "operation": "CreateRepositoryGroup", "method": "POST", "path": "/repository-groups", "status": 201, "auth_required": true },
+    { "operation": "GetRepositoryGroup", "method": "GET", "path": "/repository-groups/{repository_group_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateRepositoryGroup", "method": "PATCH", "path": "/repository-groups/{repository_group_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteRepositoryGroup", "method": "DELETE", "path": "/repository-groups/{repository_group_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchRepositoryGroups", "method": "POST", "path": "/repository-groups:search", "status": 200, "auth_required": true },
+    { "operation": "ArchiveRepositoryGroup", "method": "POST", "path": "/repository-groups/{repository_group_id}/archive", "status": 200, "auth_required": true },
+    { "operation": "RestoreRepositoryGroup", "method": "POST", "path": "/repository-groups/{repository_group_id}/restore", "status": 200, "auth_required": true },
+    { "operation": "GetRepositoryGroupRepositories", "method": "GET", "path": "/repository-groups/{repository_group_id}/repositories", "status": 200, "auth_required": true },
+    { "operation": "ListRepositories", "method": "GET", "path": "/repositories", "status": 200, "auth_required": true },
+    { "operation": "CreateRepository", "method": "POST", "path": "/repositories", "status": 201, "auth_required": true },
+    { "operation": "GetRepository", "method": "GET", "path": "/repositories/{repository_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateRepository", "method": "PATCH", "path": "/repositories/{repository_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteRepository", "method": "DELETE", "path": "/repositories/{repository_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchRepositories", "method": "POST", "path": "/repositories:search", "status": 200, "auth_required": true },
+    { "operation": "ArchiveRepository", "method": "POST", "path": "/repositories/{repository_id}/archive", "status": 200, "auth_required": true },
+    { "operation": "RestoreRepository", "method": "POST", "path": "/repositories/{repository_id}/restore", "status": 200, "auth_required": true },
+    { "operation": "GetRepositorySources", "method": "GET", "path": "/repositories/{repository_id}/sources", "status": 200, "auth_required": true },
+    { "operation": "EnqueueRepositoryIngestion", "method": "POST", "path": "/repositories/{repository_id}/enqueue-ingestion", "status": 202, "auth_required": true },
+    { "operation": "ListSources", "method": "GET", "path": "/sources", "status": 200, "auth_required": true },
+    { "operation": "CreateSource", "method": "POST", "path": "/sources", "status": 201, "auth_required": true },
+    { "operation": "GetSource", "method": "GET", "path": "/sources/{source_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateSource", "method": "PATCH", "path": "/sources/{source_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteSource", "method": "DELETE", "path": "/sources/{source_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchSources", "method": "POST", "path": "/sources:search", "status": 200, "auth_required": true },
+    { "operation": "EnableSource", "method": "POST", "path": "/sources/{source_id}/enable", "status": 200, "auth_required": true },
+    { "operation": "DisableSource", "method": "POST", "path": "/sources/{source_id}/disable", "status": 200, "auth_required": true },
+    { "operation": "TestSourceConnection", "method": "POST", "path": "/sources/{source_id}/test-connection", "status": 200, "auth_required": true },
+    { "operation": "EnqueueSourceIngestion", "method": "POST", "path": "/sources/{source_id}/enqueue-ingestion", "status": 202, "auth_required": true },
+    { "operation": "GetSourceIngestionJobs", "method": "GET", "path": "/sources/{source_id}/ingestion-jobs", "status": 200, "auth_required": true },
+    { "operation": "GetSourceRawRecords", "method": "GET", "path": "/sources/{source_id}/raw-records", "status": 200, "auth_required": true },
+    { "operation": "GetSourceArts", "method": "GET", "path": "/sources/{source_id}/arts", "status": 200, "auth_required": true },
+    { "operation": "GetSourceMetadata", "method": "GET", "path": "/sources/{source_id}/metadata", "status": 200, "auth_required": true },
+    { "operation": "GetSourceRelationships", "method": "GET", "path": "/sources/{source_id}/relationships", "status": 200, "auth_required": true },
+    { "operation": "ListNormalizers", "method": "GET", "path": "/normalizers", "status": 200, "auth_required": true },
+    { "operation": "CreateNormalizer", "method": "POST", "path": "/normalizers", "status": 201, "auth_required": true },
+    { "operation": "GetNormalizer", "method": "GET", "path": "/normalizers/{normalizer_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateNormalizer", "method": "PATCH", "path": "/normalizers/{normalizer_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteNormalizer", "method": "DELETE", "path": "/normalizers/{normalizer_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchNormalizers", "method": "POST", "path": "/normalizers:search", "status": 200, "auth_required": true },
+    { "operation": "EnableNormalizer", "method": "POST", "path": "/normalizers/{normalizer_id}/enable", "status": 200, "auth_required": true },
+    { "operation": "DisableNormalizer", "method": "POST", "path": "/normalizers/{normalizer_id}/disable", "status": 200, "auth_required": true },
+    { "operation": "TestNormalizer", "method": "POST", "path": "/normalizers/{normalizer_id}/test", "status": 200, "auth_required": true },
+    { "operation": "ListIngestionJobs", "method": "GET", "path": "/ingestion-jobs", "status": 200, "auth_required": true },
+    { "operation": "CreateIngestionJob", "method": "POST", "path": "/ingestion-jobs", "status": 202, "auth_required": true },
+    { "operation": "GetIngestionJob", "method": "GET", "path": "/ingestion-jobs/{ingestion_job_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateIngestionJob", "method": "PATCH", "path": "/ingestion-jobs/{ingestion_job_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteIngestionJob", "method": "DELETE", "path": "/ingestion-jobs/{ingestion_job_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchIngestionJobs", "method": "POST", "path": "/ingestion-jobs:search", "status": 200, "auth_required": true },
+    { "operation": "CancelIngestionJob", "method": "POST", "path": "/ingestion-jobs/{ingestion_job_id}/cancel", "status": 200, "auth_required": true },
+    { "operation": "RetryIngestionJob", "method": "POST", "path": "/ingestion-jobs/{ingestion_job_id}/retry", "status": 202, "auth_required": true },
+    { "operation": "PauseIngestionJob", "method": "POST", "path": "/ingestion-jobs/{ingestion_job_id}/pause", "status": 200, "auth_required": true },
+    { "operation": "ResumeIngestionJob", "method": "POST", "path": "/ingestion-jobs/{ingestion_job_id}/resume", "status": 202, "auth_required": true },
+    { "operation": "GetIngestionJobLogs", "method": "GET", "path": "/ingestion-jobs/{ingestion_job_id}/logs", "status": 200, "auth_required": true },
+    { "operation": "GetIngestionJobRawRecords", "method": "GET", "path": "/ingestion-jobs/{ingestion_job_id}/raw-records", "status": 200, "auth_required": true },
+    { "operation": "GetIngestionJobArts", "method": "GET", "path": "/ingestion-jobs/{ingestion_job_id}/arts", "status": 200, "auth_required": true },
+    { "operation": "GetIngestionJobMetadata", "method": "GET", "path": "/ingestion-jobs/{ingestion_job_id}/metadata", "status": 200, "auth_required": true },
+    { "operation": "GetIngestionJobRelationships", "method": "GET", "path": "/ingestion-jobs/{ingestion_job_id}/relationships", "status": 200, "auth_required": true },
+    { "operation": "ListIngestionLogs", "method": "GET", "path": "/ingestion-logs", "status": 200, "auth_required": true },
+    { "operation": "GetIngestionLog", "method": "GET", "path": "/ingestion-logs/{ingestion_log_id}", "status": 200, "auth_required": true },
+    { "operation": "SearchIngestionLogs", "method": "POST", "path": "/ingestion-logs:search", "status": 200, "auth_required": true },
+    { "operation": "GetIngestionLogJob", "method": "GET", "path": "/ingestion-logs/{ingestion_log_id}/ingestion-job", "status": 200, "auth_required": true },
+    { "operation": "ListRawRecords", "method": "GET", "path": "/raw-records", "status": 200, "auth_required": true },
+    { "operation": "GetRawRecord", "method": "GET", "path": "/raw-records/{raw_record_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteRawRecord", "method": "DELETE", "path": "/raw-records/{raw_record_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchRawRecords", "method": "POST", "path": "/raw-records:search", "status": 200, "auth_required": true },
+    { "operation": "GetRawRecordSource", "method": "GET", "path": "/raw-records/{raw_record_id}/source", "status": 200, "auth_required": true },
+    { "operation": "GetRawRecordIngestionJob", "method": "GET", "path": "/raw-records/{raw_record_id}/ingestion-job", "status": 200, "auth_required": true },
+    { "operation": "ReprocessRawRecord", "method": "POST", "path": "/raw-records/{raw_record_id}/reprocess", "status": 202, "auth_required": true },
+    { "operation": "ListAuthors", "method": "GET", "path": "/authors", "status": 200, "auth_required": true },
+    { "operation": "CreateAuthor", "method": "POST", "path": "/authors", "status": 201, "auth_required": true },
+    { "operation": "GetAuthor", "method": "GET", "path": "/authors/{author_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateAuthor", "method": "PATCH", "path": "/authors/{author_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteAuthor", "method": "DELETE", "path": "/authors/{author_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchAuthors", "method": "POST", "path": "/authors:search", "status": 200, "auth_required": true },
+    { "operation": "UpsertAuthor", "method": "POST", "path": "/authors:upsert", "status": 200, "auth_required": true },
+    { "operation": "MergeAuthor", "method": "POST", "path": "/authors/{author_id}/merge", "status": 200, "auth_required": true },
+    { "operation": "SplitAuthor", "method": "POST", "path": "/authors/{author_id}/split", "status": 200, "auth_required": true },
+    { "operation": "GetAuthorArts", "method": "GET", "path": "/authors/{author_id}/arts", "status": 200, "auth_required": true },
+    { "operation": "GetAuthorMetadata", "method": "GET", "path": "/authors/{author_id}/metadata", "status": 200, "auth_required": true },
+    { "operation": "GetAuthorRelationships", "method": "GET", "path": "/authors/{author_id}/relationships", "status": 200, "auth_required": true },
+    { "operation": "ListArts", "method": "GET", "path": "/arts", "status": 200, "auth_required": true },
+    { "operation": "CreateArt", "method": "POST", "path": "/arts", "status": 201, "auth_required": true },
+    { "operation": "GetArt", "method": "GET", "path": "/arts/{art_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateArt", "method": "PATCH", "path": "/arts/{art_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteArt", "method": "DELETE", "path": "/arts/{art_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchArts", "method": "POST", "path": "/arts:search", "status": 200, "auth_required": true },
+    { "operation": "UpsertArt", "method": "POST", "path": "/arts:upsert", "status": 200, "auth_required": true },
+    { "operation": "GetArtAuthor", "method": "GET", "path": "/arts/{art_id}/author", "status": 200, "auth_required": true },
+    { "operation": "GetArtSource", "method": "GET", "path": "/arts/{art_id}/source", "status": 200, "auth_required": true },
+    { "operation": "GetArtRawRecord", "method": "GET", "path": "/arts/{art_id}/raw-record", "status": 200, "auth_required": true },
+    { "operation": "GetArtMetadata", "method": "GET", "path": "/arts/{art_id}/metadata", "status": 200, "auth_required": true },
+    { "operation": "GetArtRelationships", "method": "GET", "path": "/arts/{art_id}/relationships", "status": 200, "auth_required": true },
+    { "operation": "ListMetadataItems", "method": "GET", "path": "/metadata", "status": 200, "auth_required": true },
+    { "operation": "CreateMetadata", "method": "POST", "path": "/metadata", "status": 201, "auth_required": true },
+    { "operation": "GetMetadata", "method": "GET", "path": "/metadata/{metadata_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateMetadata", "method": "PATCH", "path": "/metadata/{metadata_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteMetadata", "method": "DELETE", "path": "/metadata/{metadata_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchMetadata", "method": "POST", "path": "/metadata:search", "status": 200, "auth_required": true },
+    { "operation": "UpsertMetadata", "method": "POST", "path": "/metadata:upsert", "status": 200, "auth_required": true },
+    { "operation": "BulkUpsertMetadata", "method": "POST", "path": "/metadata:bulk-upsert", "status": 200, "auth_required": true },
+    { "operation": "GetMetadataSubject", "method": "GET", "path": "/metadata/{metadata_id}/subject", "status": 200, "auth_required": true },
+    { "operation": "GetMetadataRawRecord", "method": "GET", "path": "/metadata/{metadata_id}/raw-record", "status": 200, "auth_required": true },
+    { "operation": "GetMetadataRelationships", "method": "GET", "path": "/metadata/{metadata_id}/relationships", "status": 200, "auth_required": true },
+    { "operation": "ListRelationships", "method": "GET", "path": "/relationships", "status": 200, "auth_required": true },
+    { "operation": "CreateRelationship", "method": "POST", "path": "/relationships", "status": 201, "auth_required": true },
+    { "operation": "GetRelationship", "method": "GET", "path": "/relationships/{relationship_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateRelationship", "method": "PATCH", "path": "/relationships/{relationship_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteRelationship", "method": "DELETE", "path": "/relationships/{relationship_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchRelationships", "method": "POST", "path": "/relationships:search", "status": 200, "auth_required": true },
+    { "operation": "UpsertRelationship", "method": "POST", "path": "/relationships:upsert", "status": 200, "auth_required": true },
+    { "operation": "BulkUpsertRelationships", "method": "POST", "path": "/relationships:bulk-upsert", "status": 200, "auth_required": true },
+    { "operation": "GetRelationshipNeighborhood", "method": "POST", "path": "/relationships:neighborhood", "status": 200, "auth_required": true },
+    { "operation": "GetRelationshipFrom", "method": "GET", "path": "/relationships/{relationship_id}/from", "status": 200, "auth_required": true },
+    { "operation": "GetRelationshipTo", "method": "GET", "path": "/relationships/{relationship_id}/to", "status": 200, "auth_required": true },
+    { "operation": "GetRelationshipEvidence", "method": "GET", "path": "/relationships/{relationship_id}/evidence", "status": 200, "auth_required": true },
+    { "operation": "GetRelationshipRawRecord", "method": "GET", "path": "/relationships/{relationship_id}/raw-record", "status": 200, "auth_required": true }
+  ],
+  "calls": [
+    { "name": "RepointelRuntime.list_repository_groups", "kind": "local", "input": "{  }", "output": "Page<RepositoryGroup>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.create_repository_group", "kind": "local", "input": "{  }", "output": "RepositoryGroup", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_repository_group", "kind": "local", "input": "{  }", "output": "RepositoryGroup", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.update_repository_group", "kind": "local", "input": "{  }", "output": "RepositoryGroup", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_repository_group", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_repository_groups", "kind": "local", "input": "{  }", "output": "Page<RepositoryGroup>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.archive_repository_group", "kind": "local", "input": "{  }", "output": "RepositoryGroup", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.restore_repository_group", "kind": "local", "input": "{  }", "output": "RepositoryGroup", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_repository_group_repositories", "kind": "local", "input": "{  }", "output": "Page<Repository>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_repositories", "kind": "local", "input": "{  }", "output": "Page<Repository>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.create_repository", "kind": "local", "input": "{  }", "output": "Repository", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_repository", "kind": "local", "input": "{  }", "output": "Repository", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.update_repository", "kind": "local", "input": "{  }", "output": "Repository", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_repository", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_repositories", "kind": "local", "input": "{  }", "output": "Page<Repository>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.archive_repository", "kind": "local", "input": "{  }", "output": "Repository", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.restore_repository", "kind": "local", "input": "{  }", "output": "Repository", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_repository_sources", "kind": "local", "input": "{  }", "output": "Page<Source>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.enqueue_repository_ingestion", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_sources", "kind": "local", "input": "{  }", "output": "Page<Source>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.create_source", "kind": "local", "input": "{  }", "output": "Source", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_source", "kind": "local", "input": "{  }", "output": "Source", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.update_source", "kind": "local", "input": "{  }", "output": "Source", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_source", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_sources", "kind": "local", "input": "{  }", "output": "Page<Source>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.enable_source", "kind": "local", "input": "{  }", "output": "Source", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.disable_source", "kind": "local", "input": "{  }", "output": "Source", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.test_source_connection", "kind": "local", "input": "{  }", "output": "SourceConnectionTestResult", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.enqueue_source_ingestion", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_source_ingestion_jobs", "kind": "local", "input": "{  }", "output": "Page<IngestionJob>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_source_raw_records", "kind": "local", "input": "{  }", "output": "Page<RawRecord>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_source_arts", "kind": "local", "input": "{  }", "output": "Page<Art>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_source_metadata", "kind": "local", "input": "{  }", "output": "Page<MetadataItem>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_source_relationships", "kind": "local", "input": "{  }", "output": "Page<RelationshipEdge>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_normalizers", "kind": "local", "input": "{  }", "output": "Page<Normalizer>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.create_normalizer", "kind": "local", "input": "{  }", "output": "Normalizer", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_normalizer", "kind": "local", "input": "{  }", "output": "Normalizer", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.update_normalizer", "kind": "local", "input": "{  }", "output": "Normalizer", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_normalizer", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_normalizers", "kind": "local", "input": "{  }", "output": "Page<Normalizer>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.enable_normalizer", "kind": "local", "input": "{  }", "output": "Normalizer", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.disable_normalizer", "kind": "local", "input": "{  }", "output": "Normalizer", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.test_normalizer", "kind": "local", "input": "{  }", "output": "NormalizerTestResult", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_ingestion_jobs", "kind": "local", "input": "{  }", "output": "Page<IngestionJob>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.create_ingestion_job", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_ingestion_job", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.update_ingestion_job", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_ingestion_job", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_ingestion_jobs", "kind": "local", "input": "{  }", "output": "Page<IngestionJob>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.cancel_ingestion_job", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.retry_ingestion_job", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.pause_ingestion_job", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.resume_ingestion_job", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_ingestion_job_logs", "kind": "local", "input": "{  }", "output": "Page<IngestionLog>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_ingestion_job_raw_records", "kind": "local", "input": "{  }", "output": "Page<RawRecord>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_ingestion_job_arts", "kind": "local", "input": "{  }", "output": "Page<Art>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_ingestion_job_metadata", "kind": "local", "input": "{  }", "output": "Page<MetadataItem>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_ingestion_job_relationships", "kind": "local", "input": "{  }", "output": "Page<RelationshipEdge>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_ingestion_logs", "kind": "local", "input": "{  }", "output": "Page<IngestionLog>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_ingestion_log", "kind": "local", "input": "{  }", "output": "IngestionLog", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_ingestion_logs", "kind": "local", "input": "{  }", "output": "Page<IngestionLog>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_ingestion_log_job", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_raw_records", "kind": "local", "input": "{  }", "output": "Page<RawRecord>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_raw_record", "kind": "local", "input": "{  }", "output": "RawRecord", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_raw_record", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_raw_records", "kind": "local", "input": "{  }", "output": "Page<RawRecord>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_raw_record_source", "kind": "local", "input": "{  }", "output": "Source", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_raw_record_ingestion_job", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.reprocess_raw_record", "kind": "local", "input": "{  }", "output": "IngestionJob", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_authors", "kind": "local", "input": "{  }", "output": "Page<Author>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.create_author", "kind": "local", "input": "{  }", "output": "Author", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_author", "kind": "local", "input": "{  }", "output": "Author", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.update_author", "kind": "local", "input": "{  }", "output": "Author", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_author", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_authors", "kind": "local", "input": "{  }", "output": "Page<Author>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.upsert_author", "kind": "local", "input": "{  }", "output": "Author", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.merge_author", "kind": "local", "input": "{  }", "output": "Author", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.split_author", "kind": "local", "input": "{  }", "output": "Page<Author>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_author_arts", "kind": "local", "input": "{  }", "output": "Page<Art>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_author_metadata", "kind": "local", "input": "{  }", "output": "Page<MetadataItem>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_author_relationships", "kind": "local", "input": "{  }", "output": "Page<RelationshipEdge>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_arts", "kind": "local", "input": "{  }", "output": "Page<Art>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.create_art", "kind": "local", "input": "{  }", "output": "Art", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_art", "kind": "local", "input": "{  }", "output": "Art", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.update_art", "kind": "local", "input": "{  }", "output": "Art", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_art", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_arts", "kind": "local", "input": "{  }", "output": "Page<Art>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.upsert_art", "kind": "local", "input": "{  }", "output": "Art", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_art_author", "kind": "local", "input": "{  }", "output": "Author", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_art_source", "kind": "local", "input": "{  }", "output": "Source", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_art_raw_record", "kind": "local", "input": "{  }", "output": "RawRecord", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_art_metadata", "kind": "local", "input": "{  }", "output": "Page<MetadataItem>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_art_relationships", "kind": "local", "input": "{  }", "output": "Page<RelationshipEdge>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_metadata", "kind": "local", "input": "{  }", "output": "Page<MetadataItem>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.create_metadata", "kind": "local", "input": "{  }", "output": "MetadataItem", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_metadata", "kind": "local", "input": "{  }", "output": "MetadataItem", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.update_metadata", "kind": "local", "input": "{  }", "output": "MetadataItem", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_metadata", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_metadata", "kind": "local", "input": "{  }", "output": "Page<MetadataItem>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.upsert_metadata", "kind": "local", "input": "{  }", "output": "MetadataItem", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.bulk_upsert_metadata", "kind": "local", "input": "{  }", "output": "Page<MetadataItem>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_metadata_subject", "kind": "local", "input": "{  }", "output": "MetadataSubjectResolution", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_metadata_raw_record", "kind": "local", "input": "{  }", "output": "RawRecord", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_metadata_relationships", "kind": "local", "input": "{  }", "output": "Page<RelationshipEdge>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.list_relationships", "kind": "local", "input": "{  }", "output": "Page<RelationshipEdge>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.validate_metadata_art_author_edge", "kind": "local", "input": "{  }", "output": "RelationshipEdge", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.create_relationship", "kind": "local", "input": "{  }", "output": "RelationshipEdge", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_relationship", "kind": "local", "input": "{  }", "output": "RelationshipEdge", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.update_relationship", "kind": "local", "input": "{  }", "output": "RelationshipEdge", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.delete_relationship", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.search_relationships", "kind": "local", "input": "{  }", "output": "Page<RelationshipEdge>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.upsert_relationship", "kind": "local", "input": "{  }", "output": "RelationshipEdge", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.validate_bulk_metadata_edges", "kind": "local", "input": "{  }", "output": "Page<RelationshipEdge>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.bulk_upsert_relationships", "kind": "local", "input": "{  }", "output": "Page<RelationshipEdge>", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.validate_neighborhood_request", "kind": "local", "input": "{  }", "output": "RelationshipNeighborhood", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_relationship_neighborhood", "kind": "local", "input": "{  }", "output": "RelationshipNeighborhood", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_relationship_from", "kind": "local", "input": "{  }", "output": "RelationshipEndpointResolution", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_relationship_to", "kind": "local", "input": "{  }", "output": "RelationshipEndpointResolution", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_relationship_evidence", "kind": "local", "input": "{  }", "output": "RelationshipEvidence", "method": null, "path": null, "auth": null },
+    { "name": "RepointelRuntime.get_relationship_raw_record", "kind": "local", "input": "{  }", "output": "RawRecord", "method": null, "path": null, "auth": null }
+  ],
+  "authz_rules": [
+    { "name": "public", "cel": "true" },
+    { "name": "reader", "cel": "auth.authenticated == true" },
+    { "name": "writer", "cel": "\"writer\" in auth.roles || \"admin\" in auth.roles" },
+    { "name": "admin", "cel": "\"admin\" in auth.roles" }
+  ],
+  "rate_limits": [
+    { "operation": "ListRepositoryGroups", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateRepositoryGroup", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepositoryGroup", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateRepositoryGroup", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteRepositoryGroup", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchRepositoryGroups", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ArchiveRepositoryGroup", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "RestoreRepositoryGroup", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepositoryGroupRepositories", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListRepositories", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateRepository", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepository", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateRepository", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteRepository", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchRepositories", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ArchiveRepository", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "RestoreRepository", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepositorySources", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "EnqueueRepositoryIngestion", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListSources", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateSource", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetSource", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateSource", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteSource", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchSources", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "EnableSource", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DisableSource", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "TestSourceConnection", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "EnqueueSourceIngestion", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetSourceIngestionJobs", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetSourceRawRecords", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetSourceArts", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetSourceMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetSourceRelationships", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListNormalizers", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateNormalizer", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetNormalizer", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateNormalizer", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteNormalizer", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchNormalizers", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "EnableNormalizer", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DisableNormalizer", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "TestNormalizer", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListIngestionJobs", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateIngestionJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetIngestionJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateIngestionJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteIngestionJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchIngestionJobs", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CancelIngestionJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "RetryIngestionJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "PauseIngestionJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ResumeIngestionJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetIngestionJobLogs", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetIngestionJobRawRecords", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetIngestionJobArts", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetIngestionJobMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetIngestionJobRelationships", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListIngestionLogs", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetIngestionLog", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchIngestionLogs", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetIngestionLogJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListRawRecords", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRawRecord", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteRawRecord", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchRawRecords", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRawRecordSource", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRawRecordIngestionJob", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ReprocessRawRecord", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListAuthors", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateAuthor", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetAuthor", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateAuthor", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteAuthor", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchAuthors", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpsertAuthor", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "MergeAuthor", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SplitAuthor", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetAuthorArts", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetAuthorMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetAuthorRelationships", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListArts", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateArt", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetArt", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateArt", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteArt", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchArts", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpsertArt", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetArtAuthor", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetArtSource", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetArtRawRecord", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetArtMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetArtRelationships", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListMetadataItems", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpsertMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "BulkUpsertMetadata", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetMetadataSubject", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetMetadataRawRecord", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetMetadataRelationships", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListRelationships", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateRelationship", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRelationship", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateRelationship", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteRelationship", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchRelationships", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpsertRelationship", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "BulkUpsertRelationships", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRelationshipNeighborhood", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRelationshipFrom", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRelationshipTo", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRelationshipEvidence", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRelationshipRawRecord", "by": "ip", "requests": 600, "window_seconds": 60 }
+  ],
+  "flows": [
+    { "operation": "ListRepositoryGroups", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_repository_groups(input) -> repository_groups", "target": "RepointelRuntime.list_repository_groups", "args": "input", "binding": "repository_groups" },
+        { "kind": "output", "raw": "repository_groups", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateRepositoryGroup", "steps": [
+        { "kind": "input", "raw": "RepositoryGroupCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.create_repository_group(input) -> repository_group", "target": "RepointelRuntime.create_repository_group", "args": "input", "binding": "repository_group" },
+        { "kind": "output", "raw": "repository_group", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepositoryGroup", "steps": [
+        { "kind": "input", "raw": "{ repository_group_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_repository_group(input) -> repository_group", "target": "RepointelRuntime.get_repository_group", "args": "input", "binding": "repository_group" },
+        { "kind": "output", "raw": "repository_group", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateRepositoryGroup", "steps": [
+        { "kind": "input", "raw": "RepositoryGroupPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.update_repository_group(input) -> repository_group", "target": "RepointelRuntime.update_repository_group", "args": "input", "binding": "repository_group" },
+        { "kind": "output", "raw": "repository_group", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteRepositoryGroup", "steps": [
+        { "kind": "input", "raw": "{ repository_group_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_repository_group(input) -> deleted", "target": "RepointelRuntime.delete_repository_group", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchRepositoryGroups", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_repository_groups(input) -> repository_groups", "target": "RepointelRuntime.search_repository_groups", "args": "input", "binding": "repository_groups" },
+        { "kind": "output", "raw": "repository_groups", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ArchiveRepositoryGroup", "steps": [
+        { "kind": "input", "raw": "{ repository_group_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.archive_repository_group(input) -> repository_group", "target": "RepointelRuntime.archive_repository_group", "args": "input", "binding": "repository_group" },
+        { "kind": "output", "raw": "repository_group", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "RestoreRepositoryGroup", "steps": [
+        { "kind": "input", "raw": "{ repository_group_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.restore_repository_group(input) -> repository_group", "target": "RepointelRuntime.restore_repository_group", "args": "input", "binding": "repository_group" },
+        { "kind": "output", "raw": "repository_group", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepositoryGroupRepositories", "steps": [
+        { "kind": "input", "raw": "{ repository_group_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_repository_group_repositories(input) -> repositories", "target": "RepointelRuntime.get_repository_group_repositories", "args": "input", "binding": "repositories" },
+        { "kind": "output", "raw": "repositories", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListRepositories", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_repositories(input) -> repositories", "target": "RepointelRuntime.list_repositories", "args": "input", "binding": "repositories" },
+        { "kind": "output", "raw": "repositories", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateRepository", "steps": [
+        { "kind": "input", "raw": "RepositoryCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.create_repository(input) -> repository", "target": "RepointelRuntime.create_repository", "args": "input", "binding": "repository" },
+        { "kind": "output", "raw": "repository", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepository", "steps": [
+        { "kind": "input", "raw": "{ repository_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_repository(input) -> repository", "target": "RepointelRuntime.get_repository", "args": "input", "binding": "repository" },
+        { "kind": "output", "raw": "repository", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateRepository", "steps": [
+        { "kind": "input", "raw": "RepositoryPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.update_repository(input) -> repository", "target": "RepointelRuntime.update_repository", "args": "input", "binding": "repository" },
+        { "kind": "output", "raw": "repository", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteRepository", "steps": [
+        { "kind": "input", "raw": "{ repository_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_repository(input) -> deleted", "target": "RepointelRuntime.delete_repository", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchRepositories", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_repositories(input) -> repositories", "target": "RepointelRuntime.search_repositories", "args": "input", "binding": "repositories" },
+        { "kind": "output", "raw": "repositories", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ArchiveRepository", "steps": [
+        { "kind": "input", "raw": "{ repository_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.archive_repository(input) -> repository", "target": "RepointelRuntime.archive_repository", "args": "input", "binding": "repository" },
+        { "kind": "output", "raw": "repository", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "RestoreRepository", "steps": [
+        { "kind": "input", "raw": "{ repository_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.restore_repository(input) -> repository", "target": "RepointelRuntime.restore_repository", "args": "input", "binding": "repository" },
+        { "kind": "output", "raw": "repository", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepositorySources", "steps": [
+        { "kind": "input", "raw": "{ repository_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_repository_sources(input) -> sources", "target": "RepointelRuntime.get_repository_sources", "args": "input", "binding": "sources" },
+        { "kind": "output", "raw": "sources", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "EnqueueRepositoryIngestion", "steps": [
+        { "kind": "input", "raw": "IngestionRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.enqueue_repository_ingestion(input) -> ingestion_job", "target": "RepointelRuntime.enqueue_repository_ingestion", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListSources", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_sources(input) -> sources", "target": "RepointelRuntime.list_sources", "args": "input", "binding": "sources" },
+        { "kind": "output", "raw": "sources", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateSource", "steps": [
+        { "kind": "input", "raw": "SourceCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.create_source(input) -> source", "target": "RepointelRuntime.create_source", "args": "input", "binding": "source" },
+        { "kind": "output", "raw": "source", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetSource", "steps": [
+        { "kind": "input", "raw": "{ source_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_source(input) -> source", "target": "RepointelRuntime.get_source", "args": "input", "binding": "source" },
+        { "kind": "output", "raw": "source", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateSource", "steps": [
+        { "kind": "input", "raw": "SourcePatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.update_source(input) -> source", "target": "RepointelRuntime.update_source", "args": "input", "binding": "source" },
+        { "kind": "output", "raw": "source", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteSource", "steps": [
+        { "kind": "input", "raw": "{ source_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_source(input) -> deleted", "target": "RepointelRuntime.delete_source", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchSources", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_sources(input) -> sources", "target": "RepointelRuntime.search_sources", "args": "input", "binding": "sources" },
+        { "kind": "output", "raw": "sources", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "EnableSource", "steps": [
+        { "kind": "input", "raw": "{ source_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.enable_source(input) -> source", "target": "RepointelRuntime.enable_source", "args": "input", "binding": "source" },
+        { "kind": "output", "raw": "source", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DisableSource", "steps": [
+        { "kind": "input", "raw": "{ source_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.disable_source(input) -> source", "target": "RepointelRuntime.disable_source", "args": "input", "binding": "source" },
+        { "kind": "output", "raw": "source", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "TestSourceConnection", "steps": [
+        { "kind": "input", "raw": "SourceConnectionTestRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "LEcall", "raw": "RepointelRuntime.test_source_connection(input) -> source_connection_test_result", "target": "RepointelRuntime.test_source_connection", "args": "input", "binding": "source_connection_test_result" },
+        { "kind": "output", "raw": "source_connection_test_result", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "EnqueueSourceIngestion", "steps": [
+        { "kind": "input", "raw": "IngestionRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.enqueue_source_ingestion(input) -> ingestion_job", "target": "RepointelRuntime.enqueue_source_ingestion", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetSourceIngestionJobs", "steps": [
+        { "kind": "input", "raw": "{ source_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_source_ingestion_jobs(input) -> ingestion_jobs", "target": "RepointelRuntime.get_source_ingestion_jobs", "args": "input", "binding": "ingestion_jobs" },
+        { "kind": "output", "raw": "ingestion_jobs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetSourceRawRecords", "steps": [
+        { "kind": "input", "raw": "{ source_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_source_raw_records(input) -> raw_records", "target": "RepointelRuntime.get_source_raw_records", "args": "input", "binding": "raw_records" },
+        { "kind": "output", "raw": "raw_records", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetSourceArts", "steps": [
+        { "kind": "input", "raw": "{ source_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_source_arts(input) -> arts", "target": "RepointelRuntime.get_source_arts", "args": "input", "binding": "arts" },
+        { "kind": "output", "raw": "arts", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetSourceMetadata", "steps": [
+        { "kind": "input", "raw": "{ source_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_source_metadata(input) -> metadata_items", "target": "RepointelRuntime.get_source_metadata", "args": "input", "binding": "metadata_items" },
+        { "kind": "output", "raw": "metadata_items", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetSourceRelationships", "steps": [
+        { "kind": "input", "raw": "{ source_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_source_relationships(input) -> relationship_edges", "target": "RepointelRuntime.get_source_relationships", "args": "input", "binding": "relationship_edges" },
+        { "kind": "output", "raw": "relationship_edges", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListNormalizers", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_normalizers(input) -> normalizers", "target": "RepointelRuntime.list_normalizers", "args": "input", "binding": "normalizers" },
+        { "kind": "output", "raw": "normalizers", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateNormalizer", "steps": [
+        { "kind": "input", "raw": "NormalizerCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.create_normalizer(input) -> normalizer", "target": "RepointelRuntime.create_normalizer", "args": "input", "binding": "normalizer" },
+        { "kind": "output", "raw": "normalizer", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetNormalizer", "steps": [
+        { "kind": "input", "raw": "{ normalizer_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_normalizer(input) -> normalizer", "target": "RepointelRuntime.get_normalizer", "args": "input", "binding": "normalizer" },
+        { "kind": "output", "raw": "normalizer", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateNormalizer", "steps": [
+        { "kind": "input", "raw": "NormalizerPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.update_normalizer(input) -> normalizer", "target": "RepointelRuntime.update_normalizer", "args": "input", "binding": "normalizer" },
+        { "kind": "output", "raw": "normalizer", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteNormalizer", "steps": [
+        { "kind": "input", "raw": "{ normalizer_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_normalizer(input) -> deleted", "target": "RepointelRuntime.delete_normalizer", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchNormalizers", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_normalizers(input) -> normalizers", "target": "RepointelRuntime.search_normalizers", "args": "input", "binding": "normalizers" },
+        { "kind": "output", "raw": "normalizers", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "EnableNormalizer", "steps": [
+        { "kind": "input", "raw": "{ normalizer_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.enable_normalizer(input) -> normalizer", "target": "RepointelRuntime.enable_normalizer", "args": "input", "binding": "normalizer" },
+        { "kind": "output", "raw": "normalizer", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DisableNormalizer", "steps": [
+        { "kind": "input", "raw": "{ normalizer_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.disable_normalizer(input) -> normalizer", "target": "RepointelRuntime.disable_normalizer", "args": "input", "binding": "normalizer" },
+        { "kind": "output", "raw": "normalizer", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "TestNormalizer", "steps": [
+        { "kind": "input", "raw": "NormalizerTestRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "LEcall", "raw": "RepointelRuntime.test_normalizer(input) -> normalizer_test_result", "target": "RepointelRuntime.test_normalizer", "args": "input", "binding": "normalizer_test_result" },
+        { "kind": "output", "raw": "normalizer_test_result", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListIngestionJobs", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_ingestion_jobs(input) -> ingestion_jobs", "target": "RepointelRuntime.list_ingestion_jobs", "args": "input", "binding": "ingestion_jobs" },
+        { "kind": "output", "raw": "ingestion_jobs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateIngestionJob", "steps": [
+        { "kind": "input", "raw": "IngestionRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.create_ingestion_job(input) -> ingestion_job", "target": "RepointelRuntime.create_ingestion_job", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetIngestionJob", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_ingestion_job(input) -> ingestion_job", "target": "RepointelRuntime.get_ingestion_job", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateIngestionJob", "steps": [
+        { "kind": "input", "raw": "IngestionJobPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.update_ingestion_job(input) -> ingestion_job", "target": "RepointelRuntime.update_ingestion_job", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteIngestionJob", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_ingestion_job(input) -> deleted", "target": "RepointelRuntime.delete_ingestion_job", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchIngestionJobs", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_ingestion_jobs(input) -> ingestion_jobs", "target": "RepointelRuntime.search_ingestion_jobs", "args": "input", "binding": "ingestion_jobs" },
+        { "kind": "output", "raw": "ingestion_jobs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CancelIngestionJob", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.cancel_ingestion_job(input) -> ingestion_job", "target": "RepointelRuntime.cancel_ingestion_job", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "RetryIngestionJob", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.retry_ingestion_job(input) -> ingestion_job", "target": "RepointelRuntime.retry_ingestion_job", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "PauseIngestionJob", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.pause_ingestion_job(input) -> ingestion_job", "target": "RepointelRuntime.pause_ingestion_job", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ResumeIngestionJob", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.resume_ingestion_job(input) -> ingestion_job", "target": "RepointelRuntime.resume_ingestion_job", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetIngestionJobLogs", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_ingestion_job_logs(input) -> ingestion_logs", "target": "RepointelRuntime.get_ingestion_job_logs", "args": "input", "binding": "ingestion_logs" },
+        { "kind": "output", "raw": "ingestion_logs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetIngestionJobRawRecords", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_ingestion_job_raw_records(input) -> raw_records", "target": "RepointelRuntime.get_ingestion_job_raw_records", "args": "input", "binding": "raw_records" },
+        { "kind": "output", "raw": "raw_records", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetIngestionJobArts", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_ingestion_job_arts(input) -> arts", "target": "RepointelRuntime.get_ingestion_job_arts", "args": "input", "binding": "arts" },
+        { "kind": "output", "raw": "arts", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetIngestionJobMetadata", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_ingestion_job_metadata(input) -> metadata_items", "target": "RepointelRuntime.get_ingestion_job_metadata", "args": "input", "binding": "metadata_items" },
+        { "kind": "output", "raw": "metadata_items", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetIngestionJobRelationships", "steps": [
+        { "kind": "input", "raw": "{ ingestion_job_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_ingestion_job_relationships(input) -> relationship_edges", "target": "RepointelRuntime.get_ingestion_job_relationships", "args": "input", "binding": "relationship_edges" },
+        { "kind": "output", "raw": "relationship_edges", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListIngestionLogs", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_ingestion_logs(input) -> ingestion_logs", "target": "RepointelRuntime.list_ingestion_logs", "args": "input", "binding": "ingestion_logs" },
+        { "kind": "output", "raw": "ingestion_logs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetIngestionLog", "steps": [
+        { "kind": "input", "raw": "{ ingestion_log_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_ingestion_log(input) -> ingestion_log", "target": "RepointelRuntime.get_ingestion_log", "args": "input", "binding": "ingestion_log" },
+        { "kind": "output", "raw": "ingestion_log", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchIngestionLogs", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_ingestion_logs(input) -> ingestion_logs", "target": "RepointelRuntime.search_ingestion_logs", "args": "input", "binding": "ingestion_logs" },
+        { "kind": "output", "raw": "ingestion_logs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetIngestionLogJob", "steps": [
+        { "kind": "input", "raw": "{ ingestion_log_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_ingestion_log_job(input) -> ingestion_job", "target": "RepointelRuntime.get_ingestion_log_job", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListRawRecords", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_raw_records(input) -> raw_records", "target": "RepointelRuntime.list_raw_records", "args": "input", "binding": "raw_records" },
+        { "kind": "output", "raw": "raw_records", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRawRecord", "steps": [
+        { "kind": "input", "raw": "{ raw_record_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_raw_record(input) -> raw_record", "target": "RepointelRuntime.get_raw_record", "args": "input", "binding": "raw_record" },
+        { "kind": "output", "raw": "raw_record", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteRawRecord", "steps": [
+        { "kind": "input", "raw": "{ raw_record_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_raw_record(input) -> deleted", "target": "RepointelRuntime.delete_raw_record", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchRawRecords", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_raw_records(input) -> raw_records", "target": "RepointelRuntime.search_raw_records", "args": "input", "binding": "raw_records" },
+        { "kind": "output", "raw": "raw_records", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRawRecordSource", "steps": [
+        { "kind": "input", "raw": "{ raw_record_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_raw_record_source(input) -> source", "target": "RepointelRuntime.get_raw_record_source", "args": "input", "binding": "source" },
+        { "kind": "output", "raw": "source", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRawRecordIngestionJob", "steps": [
+        { "kind": "input", "raw": "{ raw_record_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_raw_record_ingestion_job(input) -> ingestion_job", "target": "RepointelRuntime.get_raw_record_ingestion_job", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ReprocessRawRecord", "steps": [
+        { "kind": "input", "raw": "ReprocessRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "LEcall", "raw": "RepointelRuntime.reprocess_raw_record(input) -> ingestion_job", "target": "RepointelRuntime.reprocess_raw_record", "args": "input", "binding": "ingestion_job" },
+        { "kind": "output", "raw": "ingestion_job", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListAuthors", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_authors(input) -> authors", "target": "RepointelRuntime.list_authors", "args": "input", "binding": "authors" },
+        { "kind": "output", "raw": "authors", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateAuthor", "steps": [
+        { "kind": "input", "raw": "AuthorCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.create_author(input) -> author", "target": "RepointelRuntime.create_author", "args": "input", "binding": "author" },
+        { "kind": "output", "raw": "author", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetAuthor", "steps": [
+        { "kind": "input", "raw": "{ author_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_author(input) -> author", "target": "RepointelRuntime.get_author", "args": "input", "binding": "author" },
+        { "kind": "output", "raw": "author", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateAuthor", "steps": [
+        { "kind": "input", "raw": "AuthorPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.update_author(input) -> author", "target": "RepointelRuntime.update_author", "args": "input", "binding": "author" },
+        { "kind": "output", "raw": "author", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteAuthor", "steps": [
+        { "kind": "input", "raw": "{ author_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_author(input) -> deleted", "target": "RepointelRuntime.delete_author", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchAuthors", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_authors(input) -> authors", "target": "RepointelRuntime.search_authors", "args": "input", "binding": "authors" },
+        { "kind": "output", "raw": "authors", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpsertAuthor", "steps": [
+        { "kind": "input", "raw": "AuthorCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.upsert_author(input) -> author", "target": "RepointelRuntime.upsert_author", "args": "input", "binding": "author" },
+        { "kind": "output", "raw": "author", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "MergeAuthor", "steps": [
+        { "kind": "input", "raw": "AuthorMergeRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.merge_author(input) -> author", "target": "RepointelRuntime.merge_author", "args": "input", "binding": "author" },
+        { "kind": "output", "raw": "author", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SplitAuthor", "steps": [
+        { "kind": "input", "raw": "AuthorSplitRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.split_author(input) -> authors", "target": "RepointelRuntime.split_author", "args": "input", "binding": "authors" },
+        { "kind": "output", "raw": "authors", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetAuthorArts", "steps": [
+        { "kind": "input", "raw": "{ author_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_author_arts(input) -> arts", "target": "RepointelRuntime.get_author_arts", "args": "input", "binding": "arts" },
+        { "kind": "output", "raw": "arts", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetAuthorMetadata", "steps": [
+        { "kind": "input", "raw": "{ author_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_author_metadata(input) -> metadata_items", "target": "RepointelRuntime.get_author_metadata", "args": "input", "binding": "metadata_items" },
+        { "kind": "output", "raw": "metadata_items", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetAuthorRelationships", "steps": [
+        { "kind": "input", "raw": "{ author_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_author_relationships(input) -> relationship_edges", "target": "RepointelRuntime.get_author_relationships", "args": "input", "binding": "relationship_edges" },
+        { "kind": "output", "raw": "relationship_edges", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListArts", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_arts(input) -> arts", "target": "RepointelRuntime.list_arts", "args": "input", "binding": "arts" },
+        { "kind": "output", "raw": "arts", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateArt", "steps": [
+        { "kind": "input", "raw": "ArtCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.create_art(input) -> art", "target": "RepointelRuntime.create_art", "args": "input", "binding": "art" },
+        { "kind": "output", "raw": "art", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetArt", "steps": [
+        { "kind": "input", "raw": "{ art_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_art(input) -> art", "target": "RepointelRuntime.get_art", "args": "input", "binding": "art" },
+        { "kind": "output", "raw": "art", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateArt", "steps": [
+        { "kind": "input", "raw": "ArtPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.update_art(input) -> art", "target": "RepointelRuntime.update_art", "args": "input", "binding": "art" },
+        { "kind": "output", "raw": "art", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteArt", "steps": [
+        { "kind": "input", "raw": "{ art_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_art(input) -> deleted", "target": "RepointelRuntime.delete_art", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchArts", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_arts(input) -> arts", "target": "RepointelRuntime.search_arts", "args": "input", "binding": "arts" },
+        { "kind": "output", "raw": "arts", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpsertArt", "steps": [
+        { "kind": "input", "raw": "ArtCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.upsert_art(input) -> art", "target": "RepointelRuntime.upsert_art", "args": "input", "binding": "art" },
+        { "kind": "output", "raw": "art", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetArtAuthor", "steps": [
+        { "kind": "input", "raw": "{ art_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_art_author(input) -> author", "target": "RepointelRuntime.get_art_author", "args": "input", "binding": "author" },
+        { "kind": "output", "raw": "author", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetArtSource", "steps": [
+        { "kind": "input", "raw": "{ art_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_art_source(input) -> source", "target": "RepointelRuntime.get_art_source", "args": "input", "binding": "source" },
+        { "kind": "output", "raw": "source", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetArtRawRecord", "steps": [
+        { "kind": "input", "raw": "{ art_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_art_raw_record(input) -> raw_record", "target": "RepointelRuntime.get_art_raw_record", "args": "input", "binding": "raw_record" },
+        { "kind": "output", "raw": "raw_record", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetArtMetadata", "steps": [
+        { "kind": "input", "raw": "{ art_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_art_metadata(input) -> metadata_items", "target": "RepointelRuntime.get_art_metadata", "args": "input", "binding": "metadata_items" },
+        { "kind": "output", "raw": "metadata_items", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetArtRelationships", "steps": [
+        { "kind": "input", "raw": "{ art_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_art_relationships(input) -> relationship_edges", "target": "RepointelRuntime.get_art_relationships", "args": "input", "binding": "relationship_edges" },
+        { "kind": "output", "raw": "relationship_edges", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListMetadataItems", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_metadata(input) -> metadata_items", "target": "RepointelRuntime.list_metadata", "args": "input", "binding": "metadata_items" },
+        { "kind": "output", "raw": "metadata_items", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateMetadata", "steps": [
+        { "kind": "input", "raw": "MetadataCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.create_metadata(input) -> metadata_item", "target": "RepointelRuntime.create_metadata", "args": "input", "binding": "metadata_item" },
+        { "kind": "output", "raw": "metadata_item", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetMetadata", "steps": [
+        { "kind": "input", "raw": "{ metadata_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_metadata(input) -> metadata_item", "target": "RepointelRuntime.get_metadata", "args": "input", "binding": "metadata_item" },
+        { "kind": "output", "raw": "metadata_item", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateMetadata", "steps": [
+        { "kind": "input", "raw": "MetadataPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.update_metadata(input) -> metadata_item", "target": "RepointelRuntime.update_metadata", "args": "input", "binding": "metadata_item" },
+        { "kind": "output", "raw": "metadata_item", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteMetadata", "steps": [
+        { "kind": "input", "raw": "{ metadata_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_metadata(input) -> deleted", "target": "RepointelRuntime.delete_metadata", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchMetadata", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_metadata(input) -> metadata_items", "target": "RepointelRuntime.search_metadata", "args": "input", "binding": "metadata_items" },
+        { "kind": "output", "raw": "metadata_items", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpsertMetadata", "steps": [
+        { "kind": "input", "raw": "MetadataUpsert", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.upsert_metadata(input) -> metadata_item", "target": "RepointelRuntime.upsert_metadata", "args": "input", "binding": "metadata_item" },
+        { "kind": "output", "raw": "metadata_item", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "BulkUpsertMetadata", "steps": [
+        { "kind": "input", "raw": "MetadataBulkUpsertRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.bulk_upsert_metadata(input) -> metadata_items", "target": "RepointelRuntime.bulk_upsert_metadata", "args": "input", "binding": "metadata_items" },
+        { "kind": "output", "raw": "metadata_items", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetMetadataSubject", "steps": [
+        { "kind": "input", "raw": "{ metadata_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_metadata_subject(input) -> metadata_subject_resolution", "target": "RepointelRuntime.get_metadata_subject", "args": "input", "binding": "metadata_subject_resolution" },
+        { "kind": "output", "raw": "metadata_subject_resolution", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetMetadataRawRecord", "steps": [
+        { "kind": "input", "raw": "{ metadata_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_metadata_raw_record(input) -> raw_record", "target": "RepointelRuntime.get_metadata_raw_record", "args": "input", "binding": "raw_record" },
+        { "kind": "output", "raw": "raw_record", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetMetadataRelationships", "steps": [
+        { "kind": "input", "raw": "{ metadata_id: String, cursor: String, limit: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_metadata_relationships(input) -> relationship_edges", "target": "RepointelRuntime.get_metadata_relationships", "args": "input", "binding": "relationship_edges" },
+        { "kind": "output", "raw": "relationship_edges", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListRelationships", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.list_relationships(input) -> relationship_edges", "target": "RepointelRuntime.list_relationships", "args": "input", "binding": "relationship_edges" },
+        { "kind": "output", "raw": "relationship_edges", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateRelationship", "steps": [
+        { "kind": "input", "raw": "RelationshipCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "Lcall", "raw": "RepointelRuntime.validate_metadata_art_author_edge(input) -> validation", "target": "RepointelRuntime.validate_metadata_art_author_edge", "args": "input", "binding": "validation" },
+        { "kind": "if", "raw": "(validation.valid == true, pass, reject BadRequestError)", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.create_relationship(input) -> relationship", "target": "RepointelRuntime.create_relationship", "args": "input", "binding": "relationship" },
+        { "kind": "output", "raw": "relationship", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRelationship", "steps": [
+        { "kind": "input", "raw": "{ relationship_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_relationship(input) -> relationship", "target": "RepointelRuntime.get_relationship", "args": "input", "binding": "relationship" },
+        { "kind": "output", "raw": "relationship", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateRelationship", "steps": [
+        { "kind": "input", "raw": "RelationshipPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.update_relationship(input) -> relationship", "target": "RepointelRuntime.update_relationship", "args": "input", "binding": "relationship" },
+        { "kind": "output", "raw": "relationship", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteRelationship", "steps": [
+        { "kind": "input", "raw": "{ relationship_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.delete_relationship(input) -> deleted", "target": "RepointelRuntime.delete_relationship", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchRelationships", "steps": [
+        { "kind": "input", "raw": "RelationshipSearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.search_relationships(input) -> relationship_edges", "target": "RepointelRuntime.search_relationships", "args": "input", "binding": "relationship_edges" },
+        { "kind": "output", "raw": "relationship_edges", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpsertRelationship", "steps": [
+        { "kind": "input", "raw": "RelationshipUpsert", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "Lcall", "raw": "RepointelRuntime.validate_metadata_art_author_edge(input) -> validation", "target": "RepointelRuntime.validate_metadata_art_author_edge", "args": "input", "binding": "validation" },
+        { "kind": "if", "raw": "(validation.valid == true, pass, reject BadRequestError)", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.upsert_relationship(input) -> relationship", "target": "RepointelRuntime.upsert_relationship", "args": "input", "binding": "relationship" },
+        { "kind": "output", "raw": "relationship", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "BulkUpsertRelationships", "steps": [
+        { "kind": "input", "raw": "RelationshipBulkUpsertRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "Lcall", "raw": "RepointelRuntime.validate_bulk_metadata_edges(input) -> validation", "target": "RepointelRuntime.validate_bulk_metadata_edges", "args": "input", "binding": "validation" },
+        { "kind": "if", "raw": "(validation.valid == true, pass, reject BadRequestError)", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.bulk_upsert_relationships(input) -> relationship_edges", "target": "RepointelRuntime.bulk_upsert_relationships", "args": "input", "binding": "relationship_edges" },
+        { "kind": "output", "raw": "relationship_edges", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRelationshipNeighborhood", "steps": [
+        { "kind": "input", "raw": "RelationshipNeighborhoodRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "Lcall", "raw": "RepointelRuntime.validate_neighborhood_request(input) -> validation", "target": "RepointelRuntime.validate_neighborhood_request", "args": "input", "binding": "validation" },
+        { "kind": "if", "raw": "(validation.valid == true, pass, reject BadRequestError)", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_relationship_neighborhood(input) -> relationship_neighborhood", "target": "RepointelRuntime.get_relationship_neighborhood", "args": "input", "binding": "relationship_neighborhood" },
+        { "kind": "output", "raw": "relationship_neighborhood", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRelationshipFrom", "steps": [
+        { "kind": "input", "raw": "{ relationship_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_relationship_from(input) -> relationship_endpoint_resolution", "target": "RepointelRuntime.get_relationship_from", "args": "input", "binding": "relationship_endpoint_resolution" },
+        { "kind": "output", "raw": "relationship_endpoint_resolution", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRelationshipTo", "steps": [
+        { "kind": "input", "raw": "{ relationship_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_relationship_to(input) -> relationship_endpoint_resolution", "target": "RepointelRuntime.get_relationship_to", "args": "input", "binding": "relationship_endpoint_resolution" },
+        { "kind": "output", "raw": "relationship_endpoint_resolution", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRelationshipEvidence", "steps": [
+        { "kind": "input", "raw": "{ relationship_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_relationship_evidence(input) -> relationship_evidence", "target": "RepointelRuntime.get_relationship_evidence", "args": "input", "binding": "relationship_evidence" },
+        { "kind": "output", "raw": "relationship_evidence", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRelationshipRawRecord", "steps": [
+        { "kind": "input", "raw": "{ relationship_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "RepointelRuntime.get_relationship_raw_record(input) -> raw_record", "target": "RepointelRuntime.get_relationship_raw_record", "args": "input", "binding": "raw_record" },
+        { "kind": "output", "raw": "raw_record", "target": null, "args": null, "binding": null }
+    ] }
+  ]
+}

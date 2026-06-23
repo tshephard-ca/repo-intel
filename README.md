@@ -175,8 +175,10 @@ cargo test --manifest-path projects/repointel-metadata-collection/generated/Carg
 The Docker packaging keeps the Frontplane boundaries as separate runtime roles:
 
 - `postgres` in `docker-compose.yml` owns the Repointel database for the stack.
+- `generated/repointel/` vendors the generated Repointel facade source required
+  by this repo; no parent workspace checkout is required.
 - `Dockerfile.repointel` builds the generated Repointel facade used as the
-  downstream provider.
+  downstream provider from the in-repo source tree.
 - `Dockerfile` builds the generated Rust metadata-collection facade.
 - `Dockerfile.gateway` runs either the browser gateway or the internal analytics
   provider.
@@ -184,6 +186,9 @@ The Docker packaging keeps the Frontplane boundaries as separate runtime roles:
   `psql` available.
 - `docker-compose.yml` wires the facade to `RepointelFacade`,
   `RepointelAnalyticsProvider`, and `SzzAnalysisProvider`.
+- Image tags use `ghcr.io/tshephard-ca/repo-intel/...:${REPO_INTEL_IMAGE_TAG:-latest}`
+  instead of `:local`, while still allowing `docker compose up --build` from a
+  fresh clone.
 
 Create local config and replace the placeholder tokens:
 
@@ -196,6 +201,11 @@ Then build and run:
 ```bash
 docker compose up --build
 ```
+
+The compose file is self-contained for a fresh clone. It builds every local
+service from paths inside this repository and creates an empty `.repointel-git`
+mount by default. Set `REPOINTEL_GIT_ROOT_HOST` in `.env` when you want the
+stack to read real local repository checkouts.
 
 The compose file exposes the browser gateway for remote access and keeps the
 generated facades/Postgres local-only for inspection:

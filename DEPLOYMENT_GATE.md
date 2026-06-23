@@ -21,6 +21,14 @@ Docker/Keystone proof completed on June 23, 2026:
   stub could be copied into the runtime image when generated source mtimes were
   older than the stub binary. `Dockerfile` and `Dockerfile.repointel` now remove
   the exact local crate artifact/fingerprint before the final release build.
+- Fresh-clone self-containment gap found and fixed after the first proof:
+  Repointel generated source is now vendored in `generated/repointel/`,
+  compose builds only from in-repo contexts, and image tags use
+  `ghcr.io/tshephard-ca/repo-intel/...:${REPO_INTEL_IMAGE_TAG:-latest}` rather
+  than `:local`.
+- CI clean-room coverage added in `.github/workflows/compose-smoke.yml`:
+  render compose config, build all images, start the stack, and probe gateway,
+  Repointel health, and metadata health.
 - Compose-owned Postgres became healthy and Repointel created
   `repointel_records` / `repointel_store_meta`.
 - Repointel ingested local OpenStack Keystone from `/git/keystone` using the

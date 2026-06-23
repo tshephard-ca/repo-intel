@@ -12,6 +12,7 @@ Frontplane mission and the project mission.
 | Defaults stay generic. | `MISSION.md`: "Stay generic across repositories and ecosystems; resist overfitting." | `tools/szz_frontplane_analyze.py`, `backing/metadata_collection_runtime.rs`, `ux/app.js`, `ux/index.html`, README optional Swift wording | targeted `rg` for OpenStack/OpenDev/Keystone active defaults |
 | Local state ownership is explicit. | `../../mission_statement`: "facade API" | `docs/state-ownership.md`, README downstream catalog note | document review |
 | Docker deployment carries its DB. | User question: "Shouldn't the docker for this carry the db via compose?" | `docker-compose.yml`, `Dockerfile.repointel`, `.env.docker.example`, README Docker section | `docker compose config`, full compose build, Keystone proof through compose Postgres |
+| Fresh clone is self-contained. | User blocker: "Make docker compose up work from a clean clone." | `generated/repointel/`, `Dockerfile.repointel`, `docker-compose.yml`, `.github/workflows/compose-smoke.yml` | clean-room staging copy plus compose config/build; CI starts compose and probes health endpoints |
 | Production gate is explicit. | `loop-md` production deployment gate | `DEPLOYMENT_GATE.md` | Local Docker proof complete; production still needs target/secrets/approval |
 
 Two clean critique passes after the final doc update found no additional locally
@@ -42,3 +43,6 @@ no target environment or secrets were provided in this workspace task.
 - Metadata facade provider proof: analytics endpoint returned Repointel-derived
   analytics through declared `Ncall`; SZZ analyze-review returned candidates for
   Keystone commit `a9d6832ae70cbd06dadbbaeb9d4b18a7553fca3b`.
+- Fresh-clone packaging fix: compose now builds Repointel from
+  `generated/repointel/` inside this repository, uses non-`:local` image tags,
+  and has a GitHub Actions compose smoke workflow.

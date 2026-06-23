@@ -1,0 +1,42 @@
+name: Compose smoke
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  compose-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Render Compose config
+        run: docker compose --env-file .env.docker.example config
+
+      - name: Build images
+        run: docker compose --env-file .env.docker.example build
+
+      - name: Start stack
+        run: docker compose --env-file .env.docker.example up -d
+
+      - name: Smoke generated facades and gateway
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:18110/ >/dev/null \
+              && curl -fsS http://127.0.0.1:18101/healthz >/dev/null \
+              && curl -fsS http://127.0.0.1:18102/healthz >/dev/null; then
+              exit 0
+            fi
+            docker compose --env-file .env.docker.example ps
+            sleep 2
+          done
+          docker compose --env-file .env.docker.example logs --no-color
+          exit 1
+
+      - name: Stop stack
+        if: always()
+        run: docker compose --env-file .env.docker.example down -v

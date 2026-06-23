@@ -2,7 +2,7 @@
 set -eu
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-REPO_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/../../.." && pwd)
+REPO_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 
 : "${REPOINTEL_DATABASE_URL:=postgres://repointel:repointel@127.0.0.1:15432/repointel}"
 : "${REPOINTEL_BASE_URL:=http://127.0.0.1:18101}"
@@ -24,6 +24,6 @@ if command -v ss >/dev/null 2>&1 && ss -ltn 2>/dev/null | grep -q ":$REPOINTEL_D
   exit 0
 fi
 
-setsid -f sh -c 'exec node projects/repointel-metadata-collection/ux/server.mjs >>"$0" 2>&1' "$REPOINTEL_UX_LOG"
+setsid -f sh -c 'exec node ux/server.mjs >>"$0" 2>&1' "$REPOINTEL_UX_LOG"
 echo "Repointel UX started on http://$REPOINTEL_DEBUG_UI_HOST:$REPOINTEL_DEBUG_UI_PORT"
 echo "Log: $REPOINTEL_UX_LOG"

@@ -1,13 +1,13 @@
 FROM rust:1-bookworm AS builder
 
 WORKDIR /app/generated
-COPY Cargo.toml Cargo.lock ./
+COPY generated/repointel/Cargo.toml generated/repointel/Cargo.lock ./
 RUN mkdir -p src/backing \
   && printf 'fn main() {}\n' > src/main.rs \
   && cargo build --release \
   && rm -rf src
 
-COPY src ./src
+COPY generated/repointel/src ./src
 RUN rm -f target/release/repointelfacade-facade \
     target/release/deps/repointelfacade_facade* \
   && rm -rf target/release/.fingerprint/repointelfacade-facade-* \
