@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Review Risk Console</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="nav" aria-label="Console sections">
+        <button class="active" data-tab="review-risk">Review Risk</button>
+        <button data-tab="outcome-evidence">Outcome Evidence</button>
+        <button data-tab="topology">Repositories</button>
+        <button data-tab="groups">Groups</button>
+        <button data-tab="ingestion">Jobs</button>
+        <details class="connection-settings">
+          <summary>API</summary>
+          <div class="connection-grid">
+            <label>
+              <span>Repointel API path</span>
+              <input id="repointelProxy" value="/api/repointel" />
+            </label>
+            <label>
+              <span>Metadata API path</span>
+              <input id="metadataProxy" value="/api/metadata" />
+            </label>
+            <label>
+              <span>Repointel token</span>
+              <input id="repointelToken" value="" />
+            </label>
+            <label>
+              <span>Metadata token</span>
+              <input id="metadataToken" value="" />
+            </label>
+            <button id="saveConfig" class="primary">Save</button>
+            <button id="healthCheck">Check</button>
+          </div>
+        </details>
+      </nav>
+
+      <section class="workspace">
+        <section id="review-risk" class="tab active">
+          <div class="section-head review-risk-top-controls">
+            <div>
+              <h2>Review Risk</h2>
+              <p>Weighted risk score for filtered Gerrit reviews using persisted review, metadata, and normalization evidence.</p>
+            </div>
+            <div class="button-row">
+              <span id="reviewRiskStatus" class="poll-status">Not loaded</span>
+              <button id="refreshReviewRisk" class="primary">Refresh Review Risk</button>
+            </div>
+          </div>
+          <form id="reviewRiskFilters" class="filter-form">
+            <label>
+              <span>Repository ID</span>
+              <input name="repository_id" placeholder="repository-..." />
+            </label>
+            <label>
+              <span>Gerrit project</span>
+              <input name="project" placeholder="openstack/swift" />
+            </label>
+            <label>
+              <span>Status</span>
+              <select name="status">
+                <option value="NEW">Open</option>
+                <option value="MERGED">Merged</option>
+                <option value="ABANDONED">Abandoned</option>
+                <option value="ALL">All</option>
+              </select>
+            </label>
+            <label>
+              <span>Month</span>
+              <input name="month" type="month" />
+            </label>
+            <label>
+              <span>Date field</span>
+              <select name="date_field">
+                <option value="created">Created</option>
+                <option value="updated">Updated</option>
+              </select>
+            </label>
+            <label>
+              <span>Rows</span>
+              <input name="limit" type="number" min="10" max="2000" value="1000" />
+            </label>
+            <button type="submit" class="primary">Apply</button>
+          </form>
+          <div id="reviewRiskCards" class="stats-grid"></div>
+          <div class="analytics-grid">
+            <div class="panel wide">
+              <h3>Review Risk Decision Explorer</h3>
+              <div class="review-risk-decision-layout">
+                <div class="review-risk-decision-main">
+                  <div id="reviewRiskDecisionGraph" class="d3-chart tall-chart review-risk-decision-graph"></div>
+                  <div id="reviewRiskDecisionSummary" class="review-risk-decision-summary"></div>
+                </div>
+                <aside id="reviewRiskDecisionControls" class="review-risk-decision-controls"></aside>
+              </div>
+            </div>
+            <details class="review-risk-secondary wide">
+              <summary>Tables</summary>
+              <div class="review-risk-secondary-grid">
+                <div class="panel">
+                  <h3>Matching Reviews</h3>
+                  <div id="reviewRiskTable" class="analytics-table"></div>
+                  <div id="reviewRiskSelectedDetail" class="review-risk-detail"></div>
+                </div>
+                <div class="panel">
+                  <h3>Score Weights</h3>
+                  <div id="reviewRiskWeightsTable" class="analytics-table"></div>
+                </div>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <section id="outcome-evidence" class="tab">
+          <div class="section-head">
+            <div>
+              <h2>Outcome Evidence</h2>
+              <p>SZZ-backed identity ranking for one repository group at a time.</p>
+            </div>
+            <div class="button-row">
+              <span id="outcomeEvidenceStatus" class="poll-status">Not loaded</span>
+              <button id="refreshOutcomeEvidence" class="primary">Refresh Evidence</button>
+            </div>
+          </div>
+
+          <form id="outcomeEvidenceFilters" class="filter-form outcome-evidence-filters">
+            <label class="outcome-group-field">
+              <span>Repository group</span>
+              <select name="repository_group_id" id="outcomeRepoGroup"></select>
+            </label>
+            <label>
+              <span>SZZ run</span>
+              <select name="szz_run_id" id="outcomeSzzRun"></select>
+            </label>
+            <label>
+              <span>Repository</span>
+              <select name="repository_id" id="outcomeRepoFilter">
+                <option value="">All in group</option>
+              </select>
+            </label>
+            <label>
+              <span>Role</span>
+              <select name="role">
+                <option value="combined">Combined</option>
+                <option value="authors">Authors</option>
+                <option value="approvers">Approvers</option>
+              </select>
+            </label>
+            <label>
+              <span>Evidence</span>
+              <select name="evidence_type">
+                <option value="all">Direct + context</option>
+                <option value="direct">Direct only</option>
+                <option value="context">Context only</option>
+              </select>
+            </label>
+            <label>
+              <span>Min score</span>
+              <input name="min_score" type="number" min="0" max="100" step="1" value="0" />
+            </label>
+            <label>
+              <span>Min rows</span>
+              <input name="min_rows" type="number" min="1" max="1000" step="1" value="1" />
+            </label>
+            <label>
+              <span>Search identities</span>
+              <input name="search" placeholder="name, email, username" />
+            </label>
+            <button type="submit" class="primary">Apply</button>
+          </form>
+
+          <div id="outcomeEvidenceContext" class="outcome-context"></div>
+          <div id="outcomeEvidenceCards" class="stats-grid"></div>
+
+          <div class="outcome-layout">
+            <section class="panel outcome-main-panel">
+              <div class="outcome-panel-head">
+                <div>
+                  <h3>Ranked Identities</h3>
+                  <p class="mini">Ranked only from candidates inside the selected repository group.</p>
+                </div>
+                <div id="outcomeEvidenceMode" class="outcome-mode-pills"></div>
+              </div>
+              <div id="outcomeIdentityChart" class="d3-chart outcome-chart"></div>
+              <div id="outcomeIdentityTable" class="analytics-table outcome-identity-table"></div>
+            </section>
+            <aside class="panel outcome-detail-panel">
+              <div class="outcome-panel-head">
+                <div>
+                  <h3>Identity Evidence</h3>
+                  <p class="mini">Repo-local SZZ candidates, reviews, files, and commits.</p>
+                </div>
+              </div>
+              <div id="outcomeIdentityDetail" class="outcome-detail"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section id="topology" class="tab">
+          <div class="section-head">
+            <div>
+              <h2>Repositories</h2>
+              <p>Create, edit, sync, and remove the repositories and sources that feed review-risk scoring.</p>
+            </div>
+            <button id="refreshTopology" class="primary">Refresh</button>
+          </div>
+          <div class="repo-crud-layout">
+            <section class="panel repo-list-panel">
+              <div class="repo-panel-head">
+                <h3>Repositories</h3>
+                <button id="addRepository" class="primary">+ Repository</button>
+              </div>
+              <input id="repoSearch" class="repo-search" placeholder="Filter repositories" />
+              <div id="repoTree" class="repo-table"></div>
+            </section>
+            <section class="panel repo-detail-panel">
+              <div id="repoDetailHeader" class="repo-detail-header"></div>
+              <div id="repoDetailTabs" class="tabs detail-tabs">
+                <button class="active" data-repo-detail-tab="repository">Repository</button>
+                <button data-repo-detail-tab="sources">Sources</button>
+                <button data-repo-detail-tab="jobs">Jobs</button>
+              </div>
+
+              <div id="repoRepositoryPane" class="repo-detail-pane active">
+                <form id="repoForm" class="repo-form">
+                  <input name="repository_id" type="hidden" />
+                  <label>
+                    <span>Group</span>
+                    <select name="repository_group_id" id="repoGroupSelect"></select>
+                  </label>
+                  <label>
+                    <span>Repository name</span>
+                    <input name="name" placeholder="openstack/swift" />
+                  </label>
+                  <label>
+                    <span>Slug</span>
+                    <input name="slug" placeholder="swift" />
+                  </label>
+                  <label>
+                    <span>Canonical URL</span>
+                    <input name="canonical_url" placeholder="https://opendev.org/openstack/swift" />
+                  </label>
+                  <label>
+                    <span>Default branch</span>
+                    <input name="default_branch" placeholder="master" value="master" />
+                  </label>
+                  <label>
+                    <span>VCS</span>
+                    <select name="vcs">
+                      <option value="git">git</option>
+                    </select>
+                  </label>
+                  <div class="form-actions">
+                    <button type="submit" class="primary">Save Repository</button>
+                    <button type="button" id="deleteSelectedRepo" class="danger">Delete</button>
+                  </div>
+                </form>
+                <details class="advanced-editor">
+                  <summary>Groups</summary>
+                  <form id="groupForm" class="repo-form compact-repo-form">
+                    <input name="group_id" placeholder="group_id for update" />
+                    <input name="slug" placeholder="group slug" />
+                    <input name="name" placeholder="group name" />
+                    <textarea name="description" placeholder="description"></textarea>
+                    <div class="form-actions">
+                      <button type="submit" class="primary">Save Group</button>
+                      <button type="button" id="deleteSelectedGroup" class="danger">Delete</button>
+                    </div>
+                  </form>
+                </details>
+              </div>
+
+              <div id="repoSourcesPane" class="repo-detail-pane">
+                <div class="repo-pane-toolbar">
+                  <h3>Sources</h3>
+                  <button id="addSource" class="primary">+ Source</button>
+                </div>
+                <div id="repoSourceTable" class="repo-subtable"></div>
+                <form id="sourceForm" class="repo-form source-editor" hidden>
+                  <input name="source_id" type="hidden" />
+                  <input name="repository_id" type="hidden" />
+                  <label>
+                    <span>Name</span>
+                    <input name="name" placeholder="Gerrit reviews" />
+                  </label>
+                  <label>
+                    <span>Type</span>
+                    <select name="type">
+                      <option value="commits">commits</option>
+                      <option value="code_reviews">code_reviews</option>
+                      <option value="bugs">bugs</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Provider</span>
+                    <select name="provider">
+                      <option value="git">git</option>
+                      <option value="gerrit">gerrit</option>
+                      <option value="launchpad">launchpad</option>
+                      <option value="github">github</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Base URL</span>
+                    <input name="base_url" placeholder="https://gerrit.example.org" />
+                  </label>
+                  <label>
+                    <span>External key</span>
+                    <input name="external_key" placeholder="project/repository" />
+                  </label>
+                  <label>
+                    <span>Local path</span>
+                    <input name="local_path" placeholder="/path/to/git/repo" />
+                  </label>
+                  <label>
+                    <span>Limit</span>
+                    <input name="limit" type="number" min="1" value="1000" />
+                  </label>
+                  <label>
+                    <span>Gerrit reviews/minute</span>
+                    <input name="reviews_per_minute" type="number" min="1" value="6" />
+                  </label>
+                  <label>
+                    <span>Gerrit comments/change</span>
+                    <input name="comments_per_change" type="number" min="1" value="25" />
+                  </label>
+                  <label class="inline-check"><input name="include_automated_messages" type="checkbox" /> Include Gerrit automation</label>
+                  <label class="inline-check"><input name="enabled" type="checkbox" checked /> Enabled</label>
+                  <div class="form-actions">
+                    <button type="submit" class="primary">Save Source</button>
+                    <button type="button" id="cancelSourceEdit">Cancel</button>
+                    <button type="button" id="deleteSelectedSource" class="danger">Delete</button>
+                  </div>
+                </form>
+              </div>
+
+              <div id="repoJobsPane" class="repo-detail-pane">
+                <div class="repo-pane-toolbar">
+                  <h3>Recent Jobs</h3>
+                  <button id="syncSelectedRepo" class="primary">Sync Repository</button>
+                </div>
+                <div id="repoJobsTable" class="repo-subtable"></div>
+              </div>
+              <div id="memberGets" class="list compact-list repo-action-output"></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="groups" class="tab">
+          <div class="groups-page">
+            <section class="panel groups-list-panel">
+              <div class="groups-panel-head">
+                <h3>Groups</h3>
+                <div class="button-row compact">
+                  <button id="addGroupFromGroups" class="primary">+ Group</button>
+                  <button id="refreshGroups">Refresh</button>
+                </div>
+              </div>
+              <div id="groupsTable" class="groups-table"></div>
+            </section>
+
+            <section class="panel groups-viz-panel">
+              <div class="groups-panel-head">
+                <div>
+                  <h3 id="groupVizTitle">Group Visualization</h3>
+                  <p id="groupVizSubtitle" class="mini">Repository/source coverage and sync health.</p>
+                </div>
+                <div class="button-row compact">
+                  <button id="syncSelectedGroup" class="primary">Sync Group</button>
+                </div>
+              </div>
+              <div id="groupTreemapLegend" class="group-treemap-legend"></div>
+              <div id="groupTreemap" class="group-treemap d3-chart"></div>
+            </section>
+
+            <aside class="panel group-queue-panel">
+              <div class="groups-panel-head">
+                <div>
+                  <h3>Sync Queue</h3>
+                  <p id="groupSyncSummary" class="mini">No group sync running.</p>
+                </div>
+              </div>
+              <div class="button-row compact group-queue-controls">
+                <button id="startGroupSync" class="primary">Start</button>
+                <button id="pauseGroupSync">Pause after batch</button>
+                <button id="cancelGroupSync">Cancel pending</button>
+                <button id="retryFailedGroupSync">Retry failed</button>
+              </div>
+              <div id="groupSyncQueue" class="group-sync-queue"></div>
+            </aside>
+
+            <section class="panel group-detail-bottom">
+              <div class="groups-panel-head">
+                <div>
+                  <h3>Selected Detail</h3>
+                  <p id="groupSelectedSubtitle" class="mini">Select a group, repository, source, or queue row.</p>
+                </div>
+              </div>
+              <div id="groupSelectedDetail" class="group-selected-detail"></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="ingestion" class="tab">
+          <div class="section-head">
+            <div>
+              <h2>Jobs</h2>
+              <p>Create, inspect, update, retry, pause, resume, cancel, and remove ingestion jobs.</p>
+            </div>
+            <div class="button-row">
+              <span id="jobPollStatus" class="poll-status">Polling idle</span>
+              <button id="refreshIngestion" class="primary">Refresh</button>
+            </div>
+          </div>
+          <div class="split-layout two-side">
+            <div class="panel">
+              <h3>Jobs</h3>
+              <div id="jobList" class="record-list"></div>
+            </div>
+            <div class="panel">
+              <h3>Job Details</h3>
+              <form id="createJobForm" class="inline-form">
+                <input name="job_id" placeholder="job_id for update" />
+                <input name="repository_id" placeholder="repository_id" />
+                <input name="source_id" placeholder="source_id" />
+                <input name="mode" value="incremental" />
+                <input name="status" placeholder="status for update" />
+                <input name="priority" placeholder="priority" />
+                <input name="requested_by" value="debug-console" />
+                <button type="submit" class="primary">Save Job</button>
+              </form>
+              <div class="button-row compact">
+                <button id="newJobForm">New</button>
+                <button data-job-action="retry">Retry</button>
+                <button data-job-action="pause">Pause</button>
+                <button data-job-action="resume">Resume</button>
+                <button data-job-action="cancel">Cancel</button>
+                <button id="deleteSelectedJob" class="danger">Delete</button>
+                <button id="loadJobMembers">Load Job Members</button>
+                <label class="mini-inline">Page size
+                  <select id="jobMemberLimit">
+                    <option value="50">50</option>
+                    <option value="100" selected>100</option>
+                    <option value="250">250</option>
+                    <option value="500">500</option>
+                  </select>
+                </label>
+              </div>
+              <div id="jobStats" class="quick-stats job-stats"></div>
+              <div class="job-member-layout">
+                <div class="job-member-panel">
+                  <div class="member-panel-head">
+                    <h3>Logs</h3>
+                    <div id="jobLogsPager" class="member-pager"></div>
+                  </div>
+                  <div id="jobLogsList" class="scroll-list"></div>
+                </div>
+                <div class="job-member-panel">
+                  <div class="member-panel-head">
+                    <h3>Raw Records</h3>
+                    <div id="jobRawPager" class="member-pager"></div>
+                  </div>
+                  <div id="jobRawList" class="scroll-list"></div>
+                </div>
+                <div class="job-member-panel wide">
+                  <div class="member-panel-head">
+                    <h3>Arts</h3>
+                    <div id="jobArtsPager" class="member-pager"></div>
+                  </div>
+                  <div id="jobArtsList" class="scroll-list tall"></div>
+                </div>
+              </div>
+              <div id="jobDetail" class="json-card"></div>
+              <div id="jobMembers" class="member-grid"></div>
+            </div>
+          </div>
+        </section>
+
+      </section>
+    </main>
+
+    <div id="reviewRiskMessageModal" class="modal-backdrop" hidden>
+      <div class="modal-card small-modal">
+        <div class="modal-head">
+          <div>
+            <h3 id="reviewRiskMessageTitle">Scored messages</h3>
+            <p id="reviewRiskMessageSubtitle"></p>
+          </div>
+          <button id="closeReviewRiskMessages" class="icon-button" aria-label="Close">x</button>
+        </div>
+        <div id="reviewRiskMessageBody" class="modal-body"></div>
+      </div>
+    </div>
+    <div id="toastStack" class="toast-stack" role="status" aria-live="polite"></div>
+    <script src="./d3.min.js"></script>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

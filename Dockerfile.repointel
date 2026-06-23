@@ -1,0 +1,40 @@
+FROM rust:1-bookworm AS builder
+
+WORKDIR /app/generated
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir -p src/backing \
+  && printf 'fn main() {}\n' > src/main.rs \
+  && cargo build --release \
+  && rm -rf src
+
+COPY src ./src
+RUN rm -f target/release/repointelfacade-facade \
+    target/release/deps/repointelfacade_facade* \
+  && rm -rf target/release/.fingerprint/repointelfacade-facade-* \
+  && cargo build --release
+
+FROM debian:bookworm-slim
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates git \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --system --create-home --home-dir /app frontplane
+
+COPY --from=builder /app/generated/target/release/repointelfacade-facade /usr/local/bin/repointel-facade
+
+ENV REPOINTEL_STORAGE=postgres
+ENV REPOINTEL_DATA_DIR=/data/repointel
+
+RUN mkdir -p /data/repointel /git \
+  && chown -R frontplane:frontplane /data /app /git
+
+USER frontplane
+WORKDIR /app
+VOLUME ["/data/repointel", "/git"]
+EXPOSE 18081
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD ["/usr/local/bin/repointel-facade", "--healthcheck", "127.0.0.1:18081"]
+
+CMD ["/usr/local/bin/repointel-facade", "--host", "0.0.0.0", "--port", "18081"]

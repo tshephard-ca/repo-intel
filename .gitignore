@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.docker.example
+
+.metadata-collection-data/
+.repointel-git/
+.repointel-data/
+
+generated/target/
+target/
+node_modules/
+**/__pycache__/
+**/*.pyc
+
+analysis_artifacts/

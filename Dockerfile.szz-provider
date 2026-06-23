@@ -1,0 +1,23 @@
+FROM python:3.12-slim
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends ca-certificates git postgresql-client \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --system --create-home --home-dir /app szz
+
+WORKDIR /app
+COPY tools/szz_frontplane_analyze.py tools/szz_review_analyze.py ./tools/
+
+ENV HOST=0.0.0.0
+ENV PORT=18195
+ENV REPOINTEL_GIT_ROOT=/git
+
+RUN mkdir -p /git \
+  && chown -R szz:szz /app /git
+
+USER szz
+VOLUME ["/git"]
+EXPOSE 18195
+
+CMD ["python3", "tools/szz_frontplane_analyze.py", "--provider"]

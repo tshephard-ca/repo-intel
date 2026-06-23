@@ -1,0 +1,998 @@
+{
+  "namespace": "repointel.metadata_collection",
+  "service": "MetadataCollectionFacade",
+  "routes": [
+    { "operation": "ListDownstreamServices", "method": "GET", "path": "/metadata-collection/downstream-services", "status": 200, "auth_required": true },
+    { "operation": "CreateDownstreamService", "method": "POST", "path": "/metadata-collection/downstream-services", "status": 201, "auth_required": true },
+    { "operation": "GetDownstreamService", "method": "GET", "path": "/metadata-collection/downstream-services/{downstream_service_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateDownstreamService", "method": "PATCH", "path": "/metadata-collection/downstream-services/{downstream_service_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteDownstreamService", "method": "DELETE", "path": "/metadata-collection/downstream-services/{downstream_service_id}", "status": 204, "auth_required": true },
+    { "operation": "TestDownstreamServiceConnection", "method": "POST", "path": "/metadata-collection/downstream-services/{downstream_service_id}/test-connection", "status": 200, "auth_required": true },
+    { "operation": "ListCollectionProfiles", "method": "GET", "path": "/metadata-collection/profiles", "status": 200, "auth_required": true },
+    { "operation": "CreateProfile", "method": "POST", "path": "/metadata-collection/profiles", "status": 201, "auth_required": true },
+    { "operation": "GetProfile", "method": "GET", "path": "/metadata-collection/profiles/{profile_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateProfile", "method": "PATCH", "path": "/metadata-collection/profiles/{profile_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteProfile", "method": "DELETE", "path": "/metadata-collection/profiles/{profile_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchCollectionProfiles", "method": "POST", "path": "/metadata-collection/profiles:search", "status": 200, "auth_required": true },
+    { "operation": "SeedVulnIntelPriorityProfile", "method": "POST", "path": "/metadata-collection/profiles:seed-vuln-intel-priority-v1", "status": 200, "auth_required": true },
+    { "operation": "GetCollectionProfileScenarios", "method": "GET", "path": "/metadata-collection/profiles/{profile_id}/scenarios", "status": 200, "auth_required": true },
+    { "operation": "GetCollectionProfileBundles", "method": "GET", "path": "/metadata-collection/profiles/{profile_id}/bundles", "status": 200, "auth_required": true },
+    { "operation": "ListCollectionScenarios", "method": "GET", "path": "/metadata-collection/scenarios", "status": 200, "auth_required": true },
+    { "operation": "CreateScenario", "method": "POST", "path": "/metadata-collection/scenarios", "status": 201, "auth_required": true },
+    { "operation": "GetScenario", "method": "GET", "path": "/metadata-collection/scenarios/{scenario_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateScenario", "method": "PATCH", "path": "/metadata-collection/scenarios/{scenario_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteScenario", "method": "DELETE", "path": "/metadata-collection/scenarios/{scenario_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchCollectionScenarios", "method": "POST", "path": "/metadata-collection/scenarios:search", "status": 200, "auth_required": true },
+    { "operation": "GetCollectionScenarioRules", "method": "GET", "path": "/metadata-collection/scenarios/{scenario_id}/rules", "status": 200, "auth_required": true },
+    { "operation": "ListExtractorDictionaries", "method": "GET", "path": "/metadata-collection/dictionaries", "status": 200, "auth_required": true },
+    { "operation": "CreateDictionary", "method": "POST", "path": "/metadata-collection/dictionaries", "status": 201, "auth_required": true },
+    { "operation": "GetDictionary", "method": "GET", "path": "/metadata-collection/dictionaries/{dictionary_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateDictionary", "method": "PATCH", "path": "/metadata-collection/dictionaries/{dictionary_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteDictionary", "method": "DELETE", "path": "/metadata-collection/dictionaries/{dictionary_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchExtractorDictionaries", "method": "POST", "path": "/metadata-collection/dictionaries:search", "status": 200, "auth_required": true },
+    { "operation": "ListExtractorBundles", "method": "GET", "path": "/metadata-collection/extractor-bundles", "status": 200, "auth_required": true },
+    { "operation": "CreateBundle", "method": "POST", "path": "/metadata-collection/extractor-bundles", "status": 201, "auth_required": true },
+    { "operation": "GetBundle", "method": "GET", "path": "/metadata-collection/extractor-bundles/{bundle_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateBundle", "method": "PATCH", "path": "/metadata-collection/extractor-bundles/{bundle_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteBundle", "method": "DELETE", "path": "/metadata-collection/extractor-bundles/{bundle_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchExtractorBundles", "method": "POST", "path": "/metadata-collection/extractor-bundles:search", "status": 200, "auth_required": true },
+    { "operation": "EnableExtractorBundle", "method": "POST", "path": "/metadata-collection/extractor-bundles/{bundle_id}/enable", "status": 200, "auth_required": true },
+    { "operation": "DisableExtractorBundle", "method": "POST", "path": "/metadata-collection/extractor-bundles/{bundle_id}/disable", "status": 200, "auth_required": true },
+    { "operation": "GetExtractorBundleRules", "method": "GET", "path": "/metadata-collection/extractor-bundles/{bundle_id}/rules", "status": 200, "auth_required": true },
+    { "operation": "ListExtractorRules", "method": "GET", "path": "/metadata-collection/extractor-rules", "status": 200, "auth_required": true },
+    { "operation": "CreateRule", "method": "POST", "path": "/metadata-collection/extractor-rules", "status": 201, "auth_required": true },
+    { "operation": "GetRule", "method": "GET", "path": "/metadata-collection/extractor-rules/{rule_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateRule", "method": "PATCH", "path": "/metadata-collection/extractor-rules/{rule_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteRule", "method": "DELETE", "path": "/metadata-collection/extractor-rules/{rule_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchExtractorRules", "method": "POST", "path": "/metadata-collection/extractor-rules:search", "status": 200, "auth_required": true },
+    { "operation": "EnableExtractorRule", "method": "POST", "path": "/metadata-collection/extractor-rules/{rule_id}/enable", "status": 200, "auth_required": true },
+    { "operation": "DisableExtractorRule", "method": "POST", "path": "/metadata-collection/extractor-rules/{rule_id}/disable", "status": 200, "auth_required": true },
+    { "operation": "TestExtractorRule", "method": "POST", "path": "/metadata-collection/extractor-rules/{rule_id}/test", "status": 200, "auth_required": true },
+    { "operation": "ListCollectionRuns", "method": "GET", "path": "/metadata-collection/runs", "status": 200, "auth_required": true },
+    { "operation": "CreateCollectionRun", "method": "POST", "path": "/metadata-collection/runs", "status": 202, "auth_required": true },
+    { "operation": "GetCollectionRun", "method": "GET", "path": "/metadata-collection/runs/{collection_run_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateCollectionRun", "method": "PATCH", "path": "/metadata-collection/runs/{collection_run_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteCollectionRun", "method": "DELETE", "path": "/metadata-collection/runs/{collection_run_id}", "status": 204, "auth_required": true },
+    { "operation": "PlanMetadataCollectionRun", "method": "POST", "path": "/metadata-collection/runs:plan", "status": 200, "auth_required": true },
+    { "operation": "SearchMetadataCollectionRuns", "method": "POST", "path": "/metadata-collection/runs:search", "status": 200, "auth_required": true },
+    { "operation": "CancelMetadataCollectionRun", "method": "POST", "path": "/metadata-collection/runs/{collection_run_id}/cancel", "status": 200, "auth_required": true },
+    { "operation": "PauseMetadataCollectionRun", "method": "POST", "path": "/metadata-collection/runs/{collection_run_id}/pause", "status": 200, "auth_required": true },
+    { "operation": "ResumeMetadataCollectionRun", "method": "POST", "path": "/metadata-collection/runs/{collection_run_id}/resume", "status": 202, "auth_required": true },
+    { "operation": "RetryMetadataCollectionRun", "method": "POST", "path": "/metadata-collection/runs/{collection_run_id}/retry", "status": 202, "auth_required": true },
+    { "operation": "GetCollectionRunEvidenceHits", "method": "GET", "path": "/metadata-collection/runs/{collection_run_id}/evidence-hits", "status": 200, "auth_required": true },
+    { "operation": "CommitCollectionRunEvidenceHits", "method": "POST", "path": "/metadata-collection/runs/{collection_run_id}/commit", "status": 200, "auth_required": true },
+    { "operation": "GetCollectionRunDownstreamCalls", "method": "GET", "path": "/metadata-collection/runs/{collection_run_id}/downstream-calls", "status": 200, "auth_required": true },
+    { "operation": "ListEvidenceHits", "method": "GET", "path": "/metadata-collection/evidence-hits", "status": 200, "auth_required": true },
+    { "operation": "GetEvidenceHit", "method": "GET", "path": "/metadata-collection/evidence-hits/{evidence_hit_id}", "status": 200, "auth_required": true },
+    { "operation": "UpdateEvidenceHit", "method": "PATCH", "path": "/metadata-collection/evidence-hits/{evidence_hit_id}", "status": 200, "auth_required": true },
+    { "operation": "SearchEvidenceHits", "method": "POST", "path": "/metadata-collection/evidence-hits:search", "status": 200, "auth_required": true },
+    { "operation": "BulkReviewEvidenceHits", "method": "POST", "path": "/metadata-collection/evidence-hits:bulk-review", "status": 200, "auth_required": true },
+    { "operation": "CommitEvidenceHits", "method": "POST", "path": "/metadata-collection/evidence-hits:commit", "status": 200, "auth_required": true },
+    { "operation": "AcceptEvidenceHit", "method": "POST", "path": "/metadata-collection/evidence-hits/{evidence_hit_id}/accept", "status": 200, "auth_required": true },
+    { "operation": "RejectEvidenceHit", "method": "POST", "path": "/metadata-collection/evidence-hits/{evidence_hit_id}/reject", "status": 200, "auth_required": true },
+    { "operation": "GetEvidenceHitRawRecord", "method": "GET", "path": "/metadata-collection/evidence-hits/{evidence_hit_id}/raw-record", "status": 200, "auth_required": true },
+    { "operation": "GetEvidenceHitArt", "method": "GET", "path": "/metadata-collection/evidence-hits/{evidence_hit_id}/art", "status": 200, "auth_required": true },
+    { "operation": "ListScenarioCoverageReports", "method": "GET", "path": "/metadata-collection/coverage-reports", "status": 200, "auth_required": true },
+    { "operation": "CreateCoverageReport", "method": "POST", "path": "/metadata-collection/coverage-reports", "status": 201, "auth_required": true },
+    { "operation": "GetCoverageReport", "method": "GET", "path": "/metadata-collection/coverage-reports/{coverage_report_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteCoverageReport", "method": "DELETE", "path": "/metadata-collection/coverage-reports/{coverage_report_id}", "status": 204, "auth_required": true },
+    { "operation": "GetLatestScenarioCoverageReport", "method": "POST", "path": "/metadata-collection/coverage-reports:latest", "status": 200, "auth_required": true },
+    { "operation": "ListScores", "method": "GET", "path": "/metadata-collection/scores", "status": 200, "auth_required": true },
+    { "operation": "GetScore", "method": "GET", "path": "/metadata-collection/scores/{score_id}", "status": 200, "auth_required": true },
+    { "operation": "ComputeScore", "method": "POST", "path": "/metadata-collection/scores/{score_id}/compute", "status": 200, "auth_required": true },
+    { "operation": "ListScoreBuckets", "method": "GET", "path": "/metadata-collection/score_buckets", "status": 200, "auth_required": true },
+    { "operation": "GetScoreBucket", "method": "GET", "path": "/metadata-collection/score_buckets/{score_bucket_id}", "status": 200, "auth_required": true },
+    { "operation": "ComputeScoreBucket", "method": "POST", "path": "/metadata-collection/score_buckets/{score_bucket_id}/compute", "status": 200, "auth_required": true },
+    { "operation": "ListKeywordConfigs", "method": "GET", "path": "/metadata-collection/keyword-configs", "status": 200, "auth_required": true },
+    { "operation": "GetKeywordConfig", "method": "GET", "path": "/metadata-collection/keyword-configs/{keyword_config_id}", "status": 200, "auth_required": true },
+    { "operation": "ResolveKeywordConfig", "method": "POST", "path": "/metadata-collection/keyword-configs:resolve", "status": 200, "auth_required": true },
+    { "operation": "SaveKeywordConfig", "method": "POST", "path": "/metadata-collection/keyword-configs:save", "status": 200, "auth_required": true },
+    { "operation": "AdjustKeywordConfig", "method": "POST", "path": "/metadata-collection/keyword-configs:adjust", "status": 200, "auth_required": true },
+    { "operation": "GetConsoleConfig", "method": "GET", "path": "/metadata-collection/console/config", "status": 200, "auth_required": false },
+    { "operation": "GetRepointelAnalytics", "method": "GET", "path": "/metadata-collection/console/repointel-analytics", "status": 200, "auth_required": true },
+    { "operation": "GetRepointelAuthorHistory", "method": "GET", "path": "/metadata-collection/console/repointel-author-history", "status": 200, "auth_required": true },
+    { "operation": "GetRepointelIdeasBase", "method": "GET", "path": "/metadata-collection/console/repointel-ideas-base", "status": 200, "auth_required": true },
+    { "operation": "GetRepointelLoci", "method": "GET", "path": "/metadata-collection/console/repointel-loci", "status": 200, "auth_required": true },
+    { "operation": "GetRepointelLociExtended", "method": "GET", "path": "/metadata-collection/console/repointel-loci-extended", "status": 200, "auth_required": true },
+    { "operation": "GetRepointelReviewRisk", "method": "GET", "path": "/metadata-collection/console/repointel-review-risk", "status": 200, "auth_required": true },
+    { "operation": "GetRepointelReviewRiskMessages", "method": "GET", "path": "/metadata-collection/console/repointel-review-risk-messages", "status": 200, "auth_required": true },
+    { "operation": "ListSzzRuns", "method": "GET", "path": "/metadata-collection/szz-runs", "status": 200, "auth_required": true },
+    { "operation": "GetSzzRun", "method": "GET", "path": "/metadata-collection/szz-runs/{szz_run_id}", "status": 200, "auth_required": true },
+    { "operation": "DeleteSzzRun", "method": "DELETE", "path": "/metadata-collection/szz-runs/{szz_run_id}", "status": 204, "auth_required": true },
+    { "operation": "SearchSzzAnalyses", "method": "POST", "path": "/metadata-collection/szz-analyses:search", "status": 200, "auth_required": true },
+    { "operation": "AnalyzeSzzReview", "method": "POST", "path": "/metadata-collection/szz-analyses:analyze-review", "status": 200, "auth_required": true },
+    { "operation": "AnalyzeSzzBatch", "method": "POST", "path": "/metadata-collection/szz-analyses:analyze-batch", "status": 202, "auth_required": true },
+    { "operation": "ListDownstreamCalls", "method": "GET", "path": "/metadata-collection/downstream-calls", "status": 200, "auth_required": true },
+    { "operation": "GetDownstreamCall", "method": "GET", "path": "/metadata-collection/downstream-calls/{downstream_call_id}", "status": 200, "auth_required": true },
+    { "operation": "SearchDownstreamCalls", "method": "POST", "path": "/metadata-collection/downstream-calls:search", "status": 200, "auth_required": true }
+  ],
+  "calls": [
+    { "name": "RepointelFacade.health", "kind": "rest", "input": "Document", "output": "Document", "method": "GET", "path": "/healthz", "auth": "none" },
+    { "name": "RepointelFacade.search_sources", "kind": "rest", "input": "SearchRequest", "output": "DownstreamPage", "method": "POST", "path": "/sources:search", "auth": "bearer" },
+    { "name": "RepointelFacade.search_raw_records", "kind": "rest", "input": "SearchRequest", "output": "DownstreamPage", "method": "POST", "path": "/raw-records:search", "auth": "bearer" },
+    { "name": "RepointelFacade.search_arts", "kind": "rest", "input": "SearchRequest", "output": "DownstreamPage", "method": "POST", "path": "/arts:search", "auth": "bearer" },
+    { "name": "RepointelFacade.search_authors", "kind": "rest", "input": "SearchRequest", "output": "DownstreamPage", "method": "POST", "path": "/authors:search", "auth": "bearer" },
+    { "name": "RepointelFacade.get_raw_record", "kind": "rest", "input": "{ raw_record_id: String, _frontplane_auth_token: String }", "output": "DownstreamRawRecord", "method": "GET", "path": "/raw-records/{raw_record_id}", "auth": "bearer" },
+    { "name": "RepointelFacade.get_art", "kind": "rest", "input": "{ art_id: String, _frontplane_auth_token: String }", "output": "DownstreamArt", "method": "GET", "path": "/arts/{art_id}", "auth": "bearer" },
+    { "name": "RepointelFacade.bulk_upsert_metadata", "kind": "rest", "input": "RepointelMetadataBulkUpsertRequest", "output": "DownstreamPage", "method": "POST", "path": "/metadata:bulk-upsert", "auth": "bearer" },
+    { "name": "RepointelFacade.bulk_upsert_relationships", "kind": "rest", "input": "RepointelRelationshipBulkUpsertRequest", "output": "DownstreamPage", "method": "POST", "path": "/relationships:bulk-upsert", "auth": "bearer" },
+    { "name": "RepointelAnalyticsProvider.get_analytics", "kind": "rest", "input": "ConsoleReportRequest", "output": "ConsoleReport", "method": "GET", "path": "/analytics/repointel-analytics", "auth": "repointel-analytics-provider-token" },
+    { "name": "RepointelAnalyticsProvider.get_author_history", "kind": "rest", "input": "ConsoleReportRequest", "output": "ConsoleReport", "method": "GET", "path": "/analytics/repointel-author-history", "auth": "repointel-analytics-provider-token" },
+    { "name": "RepointelAnalyticsProvider.get_ideas_base", "kind": "rest", "input": "ConsoleReportRequest", "output": "ConsoleReport", "method": "GET", "path": "/analytics/repointel-ideas-base", "auth": "repointel-analytics-provider-token" },
+    { "name": "RepointelAnalyticsProvider.get_loci", "kind": "rest", "input": "ConsoleReportRequest", "output": "ConsoleReport", "method": "GET", "path": "/analytics/repointel-loci", "auth": "repointel-analytics-provider-token" },
+    { "name": "RepointelAnalyticsProvider.get_loci_extended", "kind": "rest", "input": "ConsoleReportRequest", "output": "ConsoleReport", "method": "GET", "path": "/analytics/repointel-loci-extended", "auth": "repointel-analytics-provider-token" },
+    { "name": "RepointelAnalyticsProvider.get_review_risk", "kind": "rest", "input": "ConsoleReportRequest", "output": "ConsoleReport", "method": "GET", "path": "/analytics/repointel-review-risk", "auth": "repointel-analytics-provider-token" },
+    { "name": "RepointelAnalyticsProvider.get_review_risk_messages", "kind": "rest", "input": "ConsoleReportRequest", "output": "ConsoleReport", "method": "GET", "path": "/analytics/repointel-review-risk-messages", "auth": "repointel-analytics-provider-token" },
+    { "name": "SzzAnalysisProvider.analyze_review", "kind": "rest", "input": "SzzAnalysisRequest", "output": "SzzRun", "method": "POST", "path": "/szz/analyze-review", "auth": "repointel-szz-provider-token" },
+    { "name": "SzzAnalysisProvider.analyze_batch", "kind": "rest", "input": "SzzAnalysisRequest", "output": "SzzRun", "method": "POST", "path": "/szz/analyze-batch", "auth": "repointel-szz-provider-token" },
+    { "name": "MetadataCollectionRuntime.list_downstream_services", "kind": "local", "input": "{  }", "output": "Page<DownstreamServiceConfig>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.create_downstream_service", "kind": "local", "input": "{  }", "output": "DownstreamServiceConfig", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_downstream_service", "kind": "local", "input": "{  }", "output": "DownstreamServiceConfig", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.update_downstream_service", "kind": "local", "input": "{  }", "output": "DownstreamServiceConfig", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.delete_downstream_service", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_repointel_health", "kind": "local", "input": "{  }", "output": "DownstreamConnectionTestResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.record_downstream_service_connection_test", "kind": "local", "input": "{  }", "output": "DownstreamConnectionTestResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_profiles", "kind": "local", "input": "{  }", "output": "Page<CollectionProfile>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.create_profile", "kind": "local", "input": "{  }", "output": "CollectionProfile", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_profile", "kind": "local", "input": "{  }", "output": "CollectionProfile", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.update_profile", "kind": "local", "input": "{  }", "output": "CollectionProfile", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.delete_profile", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.search_profiles", "kind": "local", "input": "{  }", "output": "Page<CollectionProfile>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.seed_vuln_intel_priority_profile", "kind": "local", "input": "{  }", "output": "CollectionProfile", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_profile_scenarios", "kind": "local", "input": "{  }", "output": "Page<CollectionScenario>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_profile_bundles", "kind": "local", "input": "{  }", "output": "Page<ExtractorBundle>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_scenarios", "kind": "local", "input": "{  }", "output": "Page<CollectionScenario>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.create_scenario", "kind": "local", "input": "{  }", "output": "CollectionScenario", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_scenario", "kind": "local", "input": "{  }", "output": "CollectionScenario", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.update_scenario", "kind": "local", "input": "{  }", "output": "CollectionScenario", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.delete_scenario", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.search_scenarios", "kind": "local", "input": "{  }", "output": "Page<CollectionScenario>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_scenario_rules", "kind": "local", "input": "{  }", "output": "Page<ExtractorRule>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_dictionaries", "kind": "local", "input": "{  }", "output": "Page<ExtractorDictionary>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.create_dictionary", "kind": "local", "input": "{  }", "output": "ExtractorDictionary", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_dictionary", "kind": "local", "input": "{  }", "output": "ExtractorDictionary", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.update_dictionary", "kind": "local", "input": "{  }", "output": "ExtractorDictionary", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.delete_dictionary", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.search_dictionaries", "kind": "local", "input": "{  }", "output": "Page<ExtractorDictionary>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_bundles", "kind": "local", "input": "{  }", "output": "Page<ExtractorBundle>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.create_bundle", "kind": "local", "input": "{  }", "output": "ExtractorBundle", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_bundle", "kind": "local", "input": "{  }", "output": "ExtractorBundle", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.update_bundle", "kind": "local", "input": "{  }", "output": "ExtractorBundle", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.delete_bundle", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.search_bundles", "kind": "local", "input": "{  }", "output": "Page<ExtractorBundle>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.enable_bundle", "kind": "local", "input": "{  }", "output": "ExtractorBundle", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.disable_bundle", "kind": "local", "input": "{  }", "output": "ExtractorBundle", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_bundle_rules", "kind": "local", "input": "{  }", "output": "Page<ExtractorRule>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_rules", "kind": "local", "input": "{  }", "output": "Page<ExtractorRule>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.validate_extractor_rule", "kind": "local", "input": "{  }", "output": "ExtractorRule", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.create_rule", "kind": "local", "input": "{  }", "output": "ExtractorRule", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_rule", "kind": "local", "input": "{  }", "output": "ExtractorRule", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.validate_extractor_rule_patch", "kind": "local", "input": "{  }", "output": "ExtractorRule", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.update_rule", "kind": "local", "input": "{  }", "output": "ExtractorRule", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.delete_rule", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.search_rules", "kind": "local", "input": "{  }", "output": "Page<ExtractorRule>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.enable_rule", "kind": "local", "input": "{  }", "output": "ExtractorRule", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.disable_rule", "kind": "local", "input": "{  }", "output": "ExtractorRule", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.test_rule", "kind": "local", "input": "{  }", "output": "RuleTestResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_runs", "kind": "local", "input": "{  }", "output": "Page<CollectionRun>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.validate_collection_run_request", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_repointel_search_sources", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_repointel_search_raw_records", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_repointel_search_arts", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_repointel_search_authors", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.create_run", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_run", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.update_run", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.delete_run", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.plan_run", "kind": "local", "input": "{  }", "output": "CollectionPlan", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.search_runs", "kind": "local", "input": "{  }", "output": "Page<CollectionRun>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.cancel_run", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.pause_run", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.resume_run", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.retry_run", "kind": "local", "input": "{  }", "output": "CollectionRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_run_evidence_hits", "kind": "local", "input": "{  }", "output": "Page<EvidenceHit>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_metadata_bulk_upsert", "kind": "local", "input": "{  }", "output": "CommitEvidenceHitsResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_relationship_bulk_upsert", "kind": "local", "input": "{  }", "output": "CommitEvidenceHitsResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.validate_relationship_bulk_upsert_request", "kind": "local", "input": "{  }", "output": "CommitEvidenceHitsResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.finish_commit", "kind": "local", "input": "{  }", "output": "CommitEvidenceHitsResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_run_downstream_calls", "kind": "local", "input": "{  }", "output": "Page<DownstreamCallTrace>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_evidence_hits", "kind": "local", "input": "{  }", "output": "Page<EvidenceHit>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_evidence_hit", "kind": "local", "input": "{  }", "output": "EvidenceHit", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.update_evidence_hit", "kind": "local", "input": "{  }", "output": "EvidenceHit", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.search_evidence_hits", "kind": "local", "input": "{  }", "output": "Page<EvidenceHit>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.bulk_review_evidence_hits", "kind": "local", "input": "{  }", "output": "EvidenceHitBulkReviewResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.accept_evidence_hit", "kind": "local", "input": "{  }", "output": "EvidenceHit", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.reject_evidence_hit", "kind": "local", "input": "{  }", "output": "EvidenceHit", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_evidence_hit_raw_record", "kind": "local", "input": "{  }", "output": "DownstreamRawRecord", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.record_evidence_hit_downstream_read", "kind": "local", "input": "{  }", "output": "DownstreamRawRecord", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_evidence_hit_art", "kind": "local", "input": "{  }", "output": "DownstreamArt", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_coverage_reports", "kind": "local", "input": "{  }", "output": "Page<ScenarioCoverageReport>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.create_coverage_report", "kind": "local", "input": "{  }", "output": "ScenarioCoverageReport", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_coverage_report", "kind": "local", "input": "{  }", "output": "ScenarioCoverageReport", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.delete_coverage_report", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_latest_coverage_report", "kind": "local", "input": "{  }", "output": "ScenarioCoverageReport", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_scores", "kind": "local", "input": "{  }", "output": "Page<Score>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_score", "kind": "local", "input": "{  }", "output": "Score", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.compute_score", "kind": "local", "input": "{  }", "output": "ScoreComputeResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_score_buckets", "kind": "local", "input": "{  }", "output": "Page<ScoreBucket>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_score_bucket", "kind": "local", "input": "{  }", "output": "ScoreBucket", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.compute_score_bucket", "kind": "local", "input": "{  }", "output": "ScoreBucketComputeResult", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_keyword_configs", "kind": "local", "input": "{  }", "output": "Page<KeywordConfig>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_keyword_config", "kind": "local", "input": "{  }", "output": "KeywordConfig", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.resolve_keyword_config", "kind": "local", "input": "{  }", "output": "KeywordConfig", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.save_keyword_config", "kind": "local", "input": "{  }", "output": "KeywordConfig", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.adjust_keyword_config", "kind": "local", "input": "{  }", "output": "KeywordConfig", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_console_config", "kind": "local", "input": "{  }", "output": "ConsoleConfig", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_szz_runs", "kind": "local", "input": "{  }", "output": "Page<SzzRun>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_szz_run", "kind": "local", "input": "{  }", "output": "SzzRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.delete_szz_run", "kind": "local", "input": "{  }", "output": "none", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.search_szz_runs", "kind": "local", "input": "{  }", "output": "Page<SzzRun>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_szz_review_analysis", "kind": "local", "input": "{  }", "output": "SzzRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.store_szz_analysis_result", "kind": "local", "input": "{  }", "output": "SzzRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.prepare_szz_batch_analysis", "kind": "local", "input": "{  }", "output": "SzzRun", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.list_downstream_calls", "kind": "local", "input": "{  }", "output": "Page<DownstreamCallTrace>", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.get_downstream_call", "kind": "local", "input": "{  }", "output": "DownstreamCallTrace", "method": null, "path": null, "auth": null },
+    { "name": "MetadataCollectionRuntime.search_downstream_calls", "kind": "local", "input": "{  }", "output": "Page<DownstreamCallTrace>", "method": null, "path": null, "auth": null }
+  ],
+  "authz_rules": [
+    { "name": "public", "cel": "true" },
+    { "name": "reader", "cel": "auth.authenticated == true" },
+    { "name": "writer", "cel": "\"writer\" in auth.roles || \"admin\" in auth.roles" },
+    { "name": "admin", "cel": "\"admin\" in auth.roles" }
+  ],
+  "rate_limits": [
+    { "operation": "ListDownstreamServices", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateDownstreamService", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetDownstreamService", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateDownstreamService", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteDownstreamService", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "TestDownstreamServiceConnection", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListCollectionProfiles", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateProfile", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetProfile", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateProfile", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteProfile", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchCollectionProfiles", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SeedVulnIntelPriorityProfile", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetCollectionProfileScenarios", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetCollectionProfileBundles", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListCollectionScenarios", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateScenario", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetScenario", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateScenario", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteScenario", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchCollectionScenarios", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetCollectionScenarioRules", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListExtractorDictionaries", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateDictionary", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetDictionary", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateDictionary", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteDictionary", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchExtractorDictionaries", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListExtractorBundles", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateBundle", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetBundle", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateBundle", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteBundle", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchExtractorBundles", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "EnableExtractorBundle", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DisableExtractorBundle", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetExtractorBundleRules", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListExtractorRules", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateRule", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRule", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateRule", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteRule", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchExtractorRules", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "EnableExtractorRule", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DisableExtractorRule", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "TestExtractorRule", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListCollectionRuns", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateCollectionRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetCollectionRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateCollectionRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteCollectionRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "PlanMetadataCollectionRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchMetadataCollectionRuns", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CancelMetadataCollectionRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "PauseMetadataCollectionRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ResumeMetadataCollectionRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "RetryMetadataCollectionRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetCollectionRunEvidenceHits", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CommitCollectionRunEvidenceHits", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetCollectionRunDownstreamCalls", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListEvidenceHits", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetEvidenceHit", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "UpdateEvidenceHit", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchEvidenceHits", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "BulkReviewEvidenceHits", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CommitEvidenceHits", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "AcceptEvidenceHit", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "RejectEvidenceHit", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetEvidenceHitRawRecord", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetEvidenceHitArt", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListScenarioCoverageReports", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "CreateCoverageReport", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetCoverageReport", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteCoverageReport", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetLatestScenarioCoverageReport", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListScores", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetScore", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ComputeScore", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListScoreBuckets", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetScoreBucket", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ComputeScoreBucket", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListKeywordConfigs", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetKeywordConfig", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ResolveKeywordConfig", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SaveKeywordConfig", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "AdjustKeywordConfig", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetConsoleConfig", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepointelAnalytics", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepointelAuthorHistory", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepointelIdeasBase", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepointelLoci", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepointelLociExtended", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepointelReviewRisk", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetRepointelReviewRiskMessages", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListSzzRuns", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetSzzRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "DeleteSzzRun", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchSzzAnalyses", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "AnalyzeSzzReview", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "AnalyzeSzzBatch", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "ListDownstreamCalls", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "GetDownstreamCall", "by": "ip", "requests": 600, "window_seconds": 60 },
+    { "operation": "SearchDownstreamCalls", "by": "ip", "requests": 600, "window_seconds": 60 }
+  ],
+  "flows": [
+    { "operation": "ListDownstreamServices", "steps": [
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_downstream_services(input) -> downstream_service_configs", "target": "MetadataCollectionRuntime.list_downstream_services", "args": "input", "binding": "downstream_service_configs" },
+        { "kind": "output", "raw": "downstream_service_configs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateDownstreamService", "steps": [
+        { "kind": "input", "raw": "DownstreamServiceConfigCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.create_downstream_service(input) -> downstream_service", "target": "MetadataCollectionRuntime.create_downstream_service", "args": "input", "binding": "downstream_service" },
+        { "kind": "output", "raw": "downstream_service", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetDownstreamService", "steps": [
+        { "kind": "input", "raw": "{ downstream_service_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_downstream_service(input) -> downstream_service", "target": "MetadataCollectionRuntime.get_downstream_service", "args": "input", "binding": "downstream_service" },
+        { "kind": "output", "raw": "downstream_service", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateDownstreamService", "steps": [
+        { "kind": "input", "raw": "DownstreamServiceConfigPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.update_downstream_service(input) -> downstream_service", "target": "MetadataCollectionRuntime.update_downstream_service", "args": "input", "binding": "downstream_service" },
+        { "kind": "output", "raw": "downstream_service", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteDownstreamService", "steps": [
+        { "kind": "input", "raw": "{ downstream_service_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.delete_downstream_service(input) -> deleted", "target": "MetadataCollectionRuntime.delete_downstream_service", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "TestDownstreamServiceConnection", "steps": [
+        { "kind": "input", "raw": "DownstreamConnectionTestRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_repointel_health(input) -> repointel_health_request", "target": "MetadataCollectionRuntime.prepare_repointel_health", "args": "input", "binding": "repointel_health_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.health(repointel_health_request) -> downstream_health", "target": "RepointelFacade.health", "args": "repointel_health_request", "binding": "downstream_health" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.record_downstream_service_connection_test(input, downstream_health) -> downstream_connection_test_result", "target": "MetadataCollectionRuntime.record_downstream_service_connection_test", "args": "input, downstream_health", "binding": "downstream_connection_test_result" },
+        { "kind": "output", "raw": "downstream_connection_test_result", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListCollectionProfiles", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_profiles(input) -> collection_profiles", "target": "MetadataCollectionRuntime.list_profiles", "args": "input", "binding": "collection_profiles" },
+        { "kind": "output", "raw": "collection_profiles", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateProfile", "steps": [
+        { "kind": "input", "raw": "CollectionProfileCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.create_profile(input) -> profile", "target": "MetadataCollectionRuntime.create_profile", "args": "input", "binding": "profile" },
+        { "kind": "output", "raw": "profile", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetProfile", "steps": [
+        { "kind": "input", "raw": "{ profile_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_profile(input) -> profile", "target": "MetadataCollectionRuntime.get_profile", "args": "input", "binding": "profile" },
+        { "kind": "output", "raw": "profile", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateProfile", "steps": [
+        { "kind": "input", "raw": "CollectionProfilePatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.update_profile(input) -> profile", "target": "MetadataCollectionRuntime.update_profile", "args": "input", "binding": "profile" },
+        { "kind": "output", "raw": "profile", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteProfile", "steps": [
+        { "kind": "input", "raw": "{ profile_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.delete_profile(input) -> deleted", "target": "MetadataCollectionRuntime.delete_profile", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchCollectionProfiles", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.search_profiles(input) -> collection_profiles", "target": "MetadataCollectionRuntime.search_profiles", "args": "input", "binding": "collection_profiles" },
+        { "kind": "output", "raw": "collection_profiles", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SeedVulnIntelPriorityProfile", "steps": [
+        { "kind": "input", "raw": "{ force: Boolean }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.seed_vuln_intel_priority_profile(input) -> profile", "target": "MetadataCollectionRuntime.seed_vuln_intel_priority_profile", "args": "input", "binding": "profile" },
+        { "kind": "output", "raw": "profile", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetCollectionProfileScenarios", "steps": [
+        { "kind": "input", "raw": "{ profile_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_profile_scenarios(input) -> collection_scenarios", "target": "MetadataCollectionRuntime.get_profile_scenarios", "args": "input", "binding": "collection_scenarios" },
+        { "kind": "output", "raw": "collection_scenarios", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetCollectionProfileBundles", "steps": [
+        { "kind": "input", "raw": "{ profile_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_profile_bundles(input) -> extractor_bundles", "target": "MetadataCollectionRuntime.get_profile_bundles", "args": "input", "binding": "extractor_bundles" },
+        { "kind": "output", "raw": "extractor_bundles", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListCollectionScenarios", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_scenarios(input) -> collection_scenarios", "target": "MetadataCollectionRuntime.list_scenarios", "args": "input", "binding": "collection_scenarios" },
+        { "kind": "output", "raw": "collection_scenarios", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateScenario", "steps": [
+        { "kind": "input", "raw": "CollectionScenarioCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.create_scenario(input) -> scenario", "target": "MetadataCollectionRuntime.create_scenario", "args": "input", "binding": "scenario" },
+        { "kind": "output", "raw": "scenario", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetScenario", "steps": [
+        { "kind": "input", "raw": "{ scenario_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_scenario(input) -> scenario", "target": "MetadataCollectionRuntime.get_scenario", "args": "input", "binding": "scenario" },
+        { "kind": "output", "raw": "scenario", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateScenario", "steps": [
+        { "kind": "input", "raw": "CollectionScenarioPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.update_scenario(input) -> scenario", "target": "MetadataCollectionRuntime.update_scenario", "args": "input", "binding": "scenario" },
+        { "kind": "output", "raw": "scenario", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteScenario", "steps": [
+        { "kind": "input", "raw": "{ scenario_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.delete_scenario(input) -> deleted", "target": "MetadataCollectionRuntime.delete_scenario", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchCollectionScenarios", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.search_scenarios(input) -> collection_scenarios", "target": "MetadataCollectionRuntime.search_scenarios", "args": "input", "binding": "collection_scenarios" },
+        { "kind": "output", "raw": "collection_scenarios", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetCollectionScenarioRules", "steps": [
+        { "kind": "input", "raw": "{ scenario_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_scenario_rules(input) -> extractor_rules", "target": "MetadataCollectionRuntime.get_scenario_rules", "args": "input", "binding": "extractor_rules" },
+        { "kind": "output", "raw": "extractor_rules", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListExtractorDictionaries", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_dictionaries(input) -> extractor_dictionaries", "target": "MetadataCollectionRuntime.list_dictionaries", "args": "input", "binding": "extractor_dictionaries" },
+        { "kind": "output", "raw": "extractor_dictionaries", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateDictionary", "steps": [
+        { "kind": "input", "raw": "ExtractorDictionaryCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.create_dictionary(input) -> dictionary", "target": "MetadataCollectionRuntime.create_dictionary", "args": "input", "binding": "dictionary" },
+        { "kind": "output", "raw": "dictionary", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetDictionary", "steps": [
+        { "kind": "input", "raw": "{ dictionary_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_dictionary(input) -> dictionary", "target": "MetadataCollectionRuntime.get_dictionary", "args": "input", "binding": "dictionary" },
+        { "kind": "output", "raw": "dictionary", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateDictionary", "steps": [
+        { "kind": "input", "raw": "ExtractorDictionaryPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.update_dictionary(input) -> dictionary", "target": "MetadataCollectionRuntime.update_dictionary", "args": "input", "binding": "dictionary" },
+        { "kind": "output", "raw": "dictionary", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteDictionary", "steps": [
+        { "kind": "input", "raw": "{ dictionary_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.delete_dictionary(input) -> deleted", "target": "MetadataCollectionRuntime.delete_dictionary", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchExtractorDictionaries", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.search_dictionaries(input) -> extractor_dictionaries", "target": "MetadataCollectionRuntime.search_dictionaries", "args": "input", "binding": "extractor_dictionaries" },
+        { "kind": "output", "raw": "extractor_dictionaries", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListExtractorBundles", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_bundles(input) -> extractor_bundles", "target": "MetadataCollectionRuntime.list_bundles", "args": "input", "binding": "extractor_bundles" },
+        { "kind": "output", "raw": "extractor_bundles", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateBundle", "steps": [
+        { "kind": "input", "raw": "ExtractorBundleCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.create_bundle(input) -> bundle", "target": "MetadataCollectionRuntime.create_bundle", "args": "input", "binding": "bundle" },
+        { "kind": "output", "raw": "bundle", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetBundle", "steps": [
+        { "kind": "input", "raw": "{ bundle_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_bundle(input) -> bundle", "target": "MetadataCollectionRuntime.get_bundle", "args": "input", "binding": "bundle" },
+        { "kind": "output", "raw": "bundle", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateBundle", "steps": [
+        { "kind": "input", "raw": "ExtractorBundlePatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.update_bundle(input) -> bundle", "target": "MetadataCollectionRuntime.update_bundle", "args": "input", "binding": "bundle" },
+        { "kind": "output", "raw": "bundle", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteBundle", "steps": [
+        { "kind": "input", "raw": "{ bundle_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.delete_bundle(input) -> deleted", "target": "MetadataCollectionRuntime.delete_bundle", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchExtractorBundles", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.search_bundles(input) -> extractor_bundles", "target": "MetadataCollectionRuntime.search_bundles", "args": "input", "binding": "extractor_bundles" },
+        { "kind": "output", "raw": "extractor_bundles", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "EnableExtractorBundle", "steps": [
+        { "kind": "input", "raw": "{ bundle_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.enable_bundle(input) -> bundle", "target": "MetadataCollectionRuntime.enable_bundle", "args": "input", "binding": "bundle" },
+        { "kind": "output", "raw": "bundle", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DisableExtractorBundle", "steps": [
+        { "kind": "input", "raw": "{ bundle_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.disable_bundle(input) -> bundle", "target": "MetadataCollectionRuntime.disable_bundle", "args": "input", "binding": "bundle" },
+        { "kind": "output", "raw": "bundle", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetExtractorBundleRules", "steps": [
+        { "kind": "input", "raw": "{ bundle_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_bundle_rules(input) -> extractor_rules", "target": "MetadataCollectionRuntime.get_bundle_rules", "args": "input", "binding": "extractor_rules" },
+        { "kind": "output", "raw": "extractor_rules", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListExtractorRules", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_rules(input) -> extractor_rules", "target": "MetadataCollectionRuntime.list_rules", "args": "input", "binding": "extractor_rules" },
+        { "kind": "output", "raw": "extractor_rules", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateRule", "steps": [
+        { "kind": "input", "raw": "ExtractorRuleCreate", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "Lcall", "raw": "MetadataCollectionRuntime.validate_extractor_rule(input) -> validation", "target": "MetadataCollectionRuntime.validate_extractor_rule", "args": "input", "binding": "validation" },
+        { "kind": "if", "raw": "(validation.valid == true, pass, reject BadRequestError)", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.create_rule(input) -> rule", "target": "MetadataCollectionRuntime.create_rule", "args": "input", "binding": "rule" },
+        { "kind": "output", "raw": "rule", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRule", "steps": [
+        { "kind": "input", "raw": "{ rule_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_rule(input) -> rule", "target": "MetadataCollectionRuntime.get_rule", "args": "input", "binding": "rule" },
+        { "kind": "output", "raw": "rule", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateRule", "steps": [
+        { "kind": "input", "raw": "ExtractorRulePatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "Lcall", "raw": "MetadataCollectionRuntime.validate_extractor_rule_patch(input) -> validation", "target": "MetadataCollectionRuntime.validate_extractor_rule_patch", "args": "input", "binding": "validation" },
+        { "kind": "if", "raw": "(validation.valid == true, pass, reject BadRequestError)", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.update_rule(input) -> rule", "target": "MetadataCollectionRuntime.update_rule", "args": "input", "binding": "rule" },
+        { "kind": "output", "raw": "rule", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteRule", "steps": [
+        { "kind": "input", "raw": "{ rule_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.delete_rule(input) -> deleted", "target": "MetadataCollectionRuntime.delete_rule", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchExtractorRules", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.search_rules(input) -> extractor_rules", "target": "MetadataCollectionRuntime.search_rules", "args": "input", "binding": "extractor_rules" },
+        { "kind": "output", "raw": "extractor_rules", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "EnableExtractorRule", "steps": [
+        { "kind": "input", "raw": "{ rule_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.enable_rule(input) -> rule", "target": "MetadataCollectionRuntime.enable_rule", "args": "input", "binding": "rule" },
+        { "kind": "output", "raw": "rule", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DisableExtractorRule", "steps": [
+        { "kind": "input", "raw": "{ rule_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.disable_rule(input) -> rule", "target": "MetadataCollectionRuntime.disable_rule", "args": "input", "binding": "rule" },
+        { "kind": "output", "raw": "rule", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "TestExtractorRule", "steps": [
+        { "kind": "input", "raw": "RuleTestRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "LEcall", "raw": "MetadataCollectionRuntime.test_rule(input) -> rule_test_result", "target": "MetadataCollectionRuntime.test_rule", "args": "input", "binding": "rule_test_result" },
+        { "kind": "output", "raw": "rule_test_result", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListCollectionRuns", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_runs(input) -> collection_runs", "target": "MetadataCollectionRuntime.list_runs", "args": "input", "binding": "collection_runs" },
+        { "kind": "output", "raw": "collection_runs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateCollectionRun", "steps": [
+        { "kind": "input", "raw": "CollectionRunRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "Lcall", "raw": "MetadataCollectionRuntime.validate_collection_run_request(input) -> validation", "target": "MetadataCollectionRuntime.validate_collection_run_request", "args": "input", "binding": "validation" },
+        { "kind": "if", "raw": "(validation.valid == true, pass, reject BadRequestError)", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_repointel_search_sources(input) -> repointel_sources_request", "target": "MetadataCollectionRuntime.prepare_repointel_search_sources", "args": "input", "binding": "repointel_sources_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.search_sources(repointel_sources_request) -> downstream_sources_page", "target": "RepointelFacade.search_sources", "args": "repointel_sources_request", "binding": "downstream_sources_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_repointel_search_raw_records(input) -> repointel_raw_records_request", "target": "MetadataCollectionRuntime.prepare_repointel_search_raw_records", "args": "input", "binding": "repointel_raw_records_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.search_raw_records(repointel_raw_records_request) -> downstream_raw_records_page", "target": "RepointelFacade.search_raw_records", "args": "repointel_raw_records_request", "binding": "downstream_raw_records_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_repointel_search_arts(input) -> repointel_arts_request", "target": "MetadataCollectionRuntime.prepare_repointel_search_arts", "args": "input", "binding": "repointel_arts_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.search_arts(repointel_arts_request) -> downstream_arts_page", "target": "RepointelFacade.search_arts", "args": "repointel_arts_request", "binding": "downstream_arts_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_repointel_search_authors(input) -> repointel_authors_request", "target": "MetadataCollectionRuntime.prepare_repointel_search_authors", "args": "input", "binding": "repointel_authors_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.search_authors(repointel_authors_request) -> downstream_authors_page", "target": "RepointelFacade.search_authors", "args": "repointel_authors_request", "binding": "downstream_authors_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.create_run(input, downstream_sources_page, downstream_raw_records_page, downstream_arts_page, downstream_authors_page) -> collection_run", "target": "MetadataCollectionRuntime.create_run", "args": "input, downstream_sources_page, downstream_raw_records_page, downstream_arts_page, downstream_authors_page", "binding": "collection_run" },
+        { "kind": "output", "raw": "collection_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetCollectionRun", "steps": [
+        { "kind": "input", "raw": "{ collection_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_run(input) -> collection_run", "target": "MetadataCollectionRuntime.get_run", "args": "input", "binding": "collection_run" },
+        { "kind": "output", "raw": "collection_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateCollectionRun", "steps": [
+        { "kind": "input", "raw": "CollectionRunPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.update_run(input) -> collection_run", "target": "MetadataCollectionRuntime.update_run", "args": "input", "binding": "collection_run" },
+        { "kind": "output", "raw": "collection_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteCollectionRun", "steps": [
+        { "kind": "input", "raw": "{ collection_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.delete_run(input) -> deleted", "target": "MetadataCollectionRuntime.delete_run", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "PlanMetadataCollectionRun", "steps": [
+        { "kind": "input", "raw": "CollectionPlanRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_repointel_search_sources(input) -> repointel_sources_request", "target": "MetadataCollectionRuntime.prepare_repointel_search_sources", "args": "input", "binding": "repointel_sources_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.search_sources(repointel_sources_request) -> downstream_sources_page", "target": "RepointelFacade.search_sources", "args": "repointel_sources_request", "binding": "downstream_sources_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_repointel_search_raw_records(input) -> repointel_raw_records_request", "target": "MetadataCollectionRuntime.prepare_repointel_search_raw_records", "args": "input", "binding": "repointel_raw_records_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.search_raw_records(repointel_raw_records_request) -> downstream_raw_records_page", "target": "RepointelFacade.search_raw_records", "args": "repointel_raw_records_request", "binding": "downstream_raw_records_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_repointel_search_arts(input) -> repointel_arts_request", "target": "MetadataCollectionRuntime.prepare_repointel_search_arts", "args": "input", "binding": "repointel_arts_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.search_arts(repointel_arts_request) -> downstream_arts_page", "target": "RepointelFacade.search_arts", "args": "repointel_arts_request", "binding": "downstream_arts_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_repointel_search_authors(input) -> repointel_authors_request", "target": "MetadataCollectionRuntime.prepare_repointel_search_authors", "args": "input", "binding": "repointel_authors_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.search_authors(repointel_authors_request) -> downstream_authors_page", "target": "RepointelFacade.search_authors", "args": "repointel_authors_request", "binding": "downstream_authors_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.plan_run(input, downstream_sources_page, downstream_raw_records_page, downstream_arts_page, downstream_authors_page) -> collection_plan", "target": "MetadataCollectionRuntime.plan_run", "args": "input, downstream_sources_page, downstream_raw_records_page, downstream_arts_page, downstream_authors_page", "binding": "collection_plan" },
+        { "kind": "output", "raw": "collection_plan", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchMetadataCollectionRuns", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.search_runs(input) -> collection_runs", "target": "MetadataCollectionRuntime.search_runs", "args": "input", "binding": "collection_runs" },
+        { "kind": "output", "raw": "collection_runs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CancelMetadataCollectionRun", "steps": [
+        { "kind": "input", "raw": "{ collection_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.cancel_run(input) -> collection_run", "target": "MetadataCollectionRuntime.cancel_run", "args": "input", "binding": "collection_run" },
+        { "kind": "output", "raw": "collection_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "PauseMetadataCollectionRun", "steps": [
+        { "kind": "input", "raw": "{ collection_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.pause_run(input) -> collection_run", "target": "MetadataCollectionRuntime.pause_run", "args": "input", "binding": "collection_run" },
+        { "kind": "output", "raw": "collection_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ResumeMetadataCollectionRun", "steps": [
+        { "kind": "input", "raw": "{ collection_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.resume_run(input) -> collection_run", "target": "MetadataCollectionRuntime.resume_run", "args": "input", "binding": "collection_run" },
+        { "kind": "output", "raw": "collection_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "RetryMetadataCollectionRun", "steps": [
+        { "kind": "input", "raw": "{ collection_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.retry_run(input) -> collection_run", "target": "MetadataCollectionRuntime.retry_run", "args": "input", "binding": "collection_run" },
+        { "kind": "output", "raw": "collection_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetCollectionRunEvidenceHits", "steps": [
+        { "kind": "input", "raw": "{ collection_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_run_evidence_hits(input) -> evidence_hits", "target": "MetadataCollectionRuntime.get_run_evidence_hits", "args": "input", "binding": "evidence_hits" },
+        { "kind": "output", "raw": "evidence_hits", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CommitCollectionRunEvidenceHits", "steps": [
+        { "kind": "input", "raw": "CommitEvidenceHitsRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_metadata_bulk_upsert(input) -> metadata_bulk_upsert_request", "target": "MetadataCollectionRuntime.prepare_metadata_bulk_upsert", "args": "input", "binding": "metadata_bulk_upsert_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.bulk_upsert_metadata(metadata_bulk_upsert_request) -> downstream_metadata_page", "target": "RepointelFacade.bulk_upsert_metadata", "args": "metadata_bulk_upsert_request", "binding": "downstream_metadata_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_relationship_bulk_upsert(input, downstream_metadata_page) -> relationship_bulk_upsert_request", "target": "MetadataCollectionRuntime.prepare_relationship_bulk_upsert", "args": "input, downstream_metadata_page", "binding": "relationship_bulk_upsert_request" },
+        { "kind": "Lcall", "raw": "MetadataCollectionRuntime.validate_relationship_bulk_upsert_request(relationship_bulk_upsert_request) -> validation", "target": "MetadataCollectionRuntime.validate_relationship_bulk_upsert_request", "args": "relationship_bulk_upsert_request", "binding": "validation" },
+        { "kind": "if", "raw": "(validation.valid == true, pass, reject BadRequestError)", "target": null, "args": null, "binding": null },
+        { "kind": "Ncall", "raw": "RepointelFacade.bulk_upsert_relationships(relationship_bulk_upsert_request) -> downstream_relationship_page", "target": "RepointelFacade.bulk_upsert_relationships", "args": "relationship_bulk_upsert_request", "binding": "downstream_relationship_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.finish_commit(input, downstream_metadata_page, downstream_relationship_page) -> commit_evidence_hits_result", "target": "MetadataCollectionRuntime.finish_commit", "args": "input, downstream_metadata_page, downstream_relationship_page", "binding": "commit_evidence_hits_result" },
+        { "kind": "output", "raw": "commit_evidence_hits_result", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetCollectionRunDownstreamCalls", "steps": [
+        { "kind": "input", "raw": "{ collection_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_run_downstream_calls(input) -> downstream_call_traces", "target": "MetadataCollectionRuntime.get_run_downstream_calls", "args": "input", "binding": "downstream_call_traces" },
+        { "kind": "output", "raw": "downstream_call_traces", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListEvidenceHits", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_evidence_hits(input) -> evidence_hits", "target": "MetadataCollectionRuntime.list_evidence_hits", "args": "input", "binding": "evidence_hits" },
+        { "kind": "output", "raw": "evidence_hits", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetEvidenceHit", "steps": [
+        { "kind": "input", "raw": "{ evidence_hit_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_evidence_hit(input) -> evidence_hit", "target": "MetadataCollectionRuntime.get_evidence_hit", "args": "input", "binding": "evidence_hit" },
+        { "kind": "output", "raw": "evidence_hit", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "UpdateEvidenceHit", "steps": [
+        { "kind": "input", "raw": "EvidenceHitPatch", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.update_evidence_hit(input) -> evidence_hit", "target": "MetadataCollectionRuntime.update_evidence_hit", "args": "input", "binding": "evidence_hit" },
+        { "kind": "output", "raw": "evidence_hit", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchEvidenceHits", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.search_evidence_hits(input) -> evidence_hits", "target": "MetadataCollectionRuntime.search_evidence_hits", "args": "input", "binding": "evidence_hits" },
+        { "kind": "output", "raw": "evidence_hits", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "BulkReviewEvidenceHits", "steps": [
+        { "kind": "input", "raw": "EvidenceHitBulkReviewRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.bulk_review_evidence_hits(input) -> evidence_hit_bulk_review_result", "target": "MetadataCollectionRuntime.bulk_review_evidence_hits", "args": "input", "binding": "evidence_hit_bulk_review_result" },
+        { "kind": "output", "raw": "evidence_hit_bulk_review_result", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CommitEvidenceHits", "steps": [
+        { "kind": "input", "raw": "CommitEvidenceHitsRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_metadata_bulk_upsert(input) -> metadata_bulk_upsert_request", "target": "MetadataCollectionRuntime.prepare_metadata_bulk_upsert", "args": "input", "binding": "metadata_bulk_upsert_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.bulk_upsert_metadata(metadata_bulk_upsert_request) -> downstream_metadata_page", "target": "RepointelFacade.bulk_upsert_metadata", "args": "metadata_bulk_upsert_request", "binding": "downstream_metadata_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_relationship_bulk_upsert(input, downstream_metadata_page) -> relationship_bulk_upsert_request", "target": "MetadataCollectionRuntime.prepare_relationship_bulk_upsert", "args": "input, downstream_metadata_page", "binding": "relationship_bulk_upsert_request" },
+        { "kind": "Lcall", "raw": "MetadataCollectionRuntime.validate_relationship_bulk_upsert_request(relationship_bulk_upsert_request) -> validation", "target": "MetadataCollectionRuntime.validate_relationship_bulk_upsert_request", "args": "relationship_bulk_upsert_request", "binding": "validation" },
+        { "kind": "if", "raw": "(validation.valid == true, pass, reject BadRequestError)", "target": null, "args": null, "binding": null },
+        { "kind": "Ncall", "raw": "RepointelFacade.bulk_upsert_relationships(relationship_bulk_upsert_request) -> downstream_relationship_page", "target": "RepointelFacade.bulk_upsert_relationships", "args": "relationship_bulk_upsert_request", "binding": "downstream_relationship_page" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.finish_commit(input, downstream_metadata_page, downstream_relationship_page) -> commit_evidence_hits_result", "target": "MetadataCollectionRuntime.finish_commit", "args": "input, downstream_metadata_page, downstream_relationship_page", "binding": "commit_evidence_hits_result" },
+        { "kind": "output", "raw": "commit_evidence_hits_result", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "AcceptEvidenceHit", "steps": [
+        { "kind": "input", "raw": "{ evidence_hit_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.accept_evidence_hit(input) -> evidence_hit", "target": "MetadataCollectionRuntime.accept_evidence_hit", "args": "input", "binding": "evidence_hit" },
+        { "kind": "output", "raw": "evidence_hit", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "RejectEvidenceHit", "steps": [
+        { "kind": "input", "raw": "{ evidence_hit_id: String, reason: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.reject_evidence_hit(input) -> evidence_hit", "target": "MetadataCollectionRuntime.reject_evidence_hit", "args": "input", "binding": "evidence_hit" },
+        { "kind": "output", "raw": "evidence_hit", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetEvidenceHitRawRecord", "steps": [
+        { "kind": "input", "raw": "{ evidence_hit_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_evidence_hit_raw_record(input) -> raw_record_request", "target": "MetadataCollectionRuntime.prepare_evidence_hit_raw_record", "args": "input", "binding": "raw_record_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.get_raw_record(raw_record_request) -> downstream_raw_record", "target": "RepointelFacade.get_raw_record", "args": "raw_record_request", "binding": "downstream_raw_record" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.record_evidence_hit_downstream_read(input, downstream_raw_record) -> downstream_raw_record", "target": "MetadataCollectionRuntime.record_evidence_hit_downstream_read", "args": "input, downstream_raw_record", "binding": "downstream_raw_record" },
+        { "kind": "output", "raw": "downstream_raw_record", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetEvidenceHitArt", "steps": [
+        { "kind": "input", "raw": "{ evidence_hit_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_evidence_hit_art(input) -> art_request", "target": "MetadataCollectionRuntime.prepare_evidence_hit_art", "args": "input", "binding": "art_request" },
+        { "kind": "Ncall", "raw": "RepointelFacade.get_art(art_request) -> downstream_art", "target": "RepointelFacade.get_art", "args": "art_request", "binding": "downstream_art" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.record_evidence_hit_downstream_read(input, downstream_art) -> downstream_art", "target": "MetadataCollectionRuntime.record_evidence_hit_downstream_read", "args": "input, downstream_art", "binding": "downstream_art" },
+        { "kind": "output", "raw": "downstream_art", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListScenarioCoverageReports", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_coverage_reports(input) -> scenario_coverage_reports", "target": "MetadataCollectionRuntime.list_coverage_reports", "args": "input", "binding": "scenario_coverage_reports" },
+        { "kind": "output", "raw": "scenario_coverage_reports", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "CreateCoverageReport", "steps": [
+        { "kind": "input", "raw": "ScenarioCoverageReportRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.create_coverage_report(input) -> scenario_coverage_report", "target": "MetadataCollectionRuntime.create_coverage_report", "args": "input", "binding": "scenario_coverage_report" },
+        { "kind": "output", "raw": "scenario_coverage_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetCoverageReport", "steps": [
+        { "kind": "input", "raw": "{ coverage_report_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_coverage_report(input) -> scenario_coverage_report", "target": "MetadataCollectionRuntime.get_coverage_report", "args": "input", "binding": "scenario_coverage_report" },
+        { "kind": "output", "raw": "scenario_coverage_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteCoverageReport", "steps": [
+        { "kind": "input", "raw": "{ coverage_report_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.delete_coverage_report(input) -> deleted", "target": "MetadataCollectionRuntime.delete_coverage_report", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetLatestScenarioCoverageReport", "steps": [
+        { "kind": "input", "raw": "ScenarioCoverageReportRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_latest_coverage_report(input) -> scenario_coverage_report", "target": "MetadataCollectionRuntime.get_latest_coverage_report", "args": "input", "binding": "scenario_coverage_report" },
+        { "kind": "output", "raw": "scenario_coverage_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListScores", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_scores(input) -> scores", "target": "MetadataCollectionRuntime.list_scores", "args": "input", "binding": "scores" },
+        { "kind": "output", "raw": "scores", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetScore", "steps": [
+        { "kind": "input", "raw": "{ score_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_score(input) -> score", "target": "MetadataCollectionRuntime.get_score", "args": "input", "binding": "score" },
+        { "kind": "output", "raw": "score", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ComputeScore", "steps": [
+        { "kind": "input", "raw": "ScoreComputeRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.compute_score(input) -> score_compute_result", "target": "MetadataCollectionRuntime.compute_score", "args": "input", "binding": "score_compute_result" },
+        { "kind": "output", "raw": "score_compute_result", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListScoreBuckets", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_score_buckets(input) -> score_buckets", "target": "MetadataCollectionRuntime.list_score_buckets", "args": "input", "binding": "score_buckets" },
+        { "kind": "output", "raw": "score_buckets", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetScoreBucket", "steps": [
+        { "kind": "input", "raw": "{ score_bucket_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_score_bucket(input) -> score_bucket", "target": "MetadataCollectionRuntime.get_score_bucket", "args": "input", "binding": "score_bucket" },
+        { "kind": "output", "raw": "score_bucket", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ComputeScoreBucket", "steps": [
+        { "kind": "input", "raw": "ScoreBucketComputeRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.compute_score_bucket(input) -> score_bucket_compute_result", "target": "MetadataCollectionRuntime.compute_score_bucket", "args": "input", "binding": "score_bucket_compute_result" },
+        { "kind": "output", "raw": "score_bucket_compute_result", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListKeywordConfigs", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_keyword_configs(input) -> keyword_configs", "target": "MetadataCollectionRuntime.list_keyword_configs", "args": "input", "binding": "keyword_configs" },
+        { "kind": "output", "raw": "keyword_configs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetKeywordConfig", "steps": [
+        { "kind": "input", "raw": "{ keyword_config_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_keyword_config(input) -> keyword_config", "target": "MetadataCollectionRuntime.get_keyword_config", "args": "input", "binding": "keyword_config" },
+        { "kind": "output", "raw": "keyword_config", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ResolveKeywordConfig", "steps": [
+        { "kind": "input", "raw": "KeywordConfigResolveRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.resolve_keyword_config(input) -> keyword_config", "target": "MetadataCollectionRuntime.resolve_keyword_config", "args": "input", "binding": "keyword_config" },
+        { "kind": "output", "raw": "keyword_config", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SaveKeywordConfig", "steps": [
+        { "kind": "input", "raw": "KeywordConfigSaveRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.save_keyword_config(input) -> keyword_config", "target": "MetadataCollectionRuntime.save_keyword_config", "args": "input", "binding": "keyword_config" },
+        { "kind": "output", "raw": "keyword_config", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "AdjustKeywordConfig", "steps": [
+        { "kind": "input", "raw": "KeywordConfigAdjustRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.adjust_keyword_config(input) -> keyword_config", "target": "MetadataCollectionRuntime.adjust_keyword_config", "args": "input", "binding": "keyword_config" },
+        { "kind": "output", "raw": "keyword_config", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetConsoleConfig", "steps": [
+        { "kind": "input", "raw": "{}", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "public", "target": null, "args": null, "binding": null },
+        { "kind": "Gcall", "raw": "MetadataCollectionRuntime.get_console_config(input) -> console_config", "target": "MetadataCollectionRuntime.get_console_config", "args": "input", "binding": "console_config" },
+        { "kind": "output", "raw": "console_config", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepointelAnalytics", "steps": [
+        { "kind": "input", "raw": "ConsoleReportRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "Ncall", "raw": "RepointelAnalyticsProvider.get_analytics(input) -> console_report", "target": "RepointelAnalyticsProvider.get_analytics", "args": "input", "binding": "console_report" },
+        { "kind": "output", "raw": "console_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepointelAuthorHistory", "steps": [
+        { "kind": "input", "raw": "ConsoleReportRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "Ncall", "raw": "RepointelAnalyticsProvider.get_author_history(input) -> console_report", "target": "RepointelAnalyticsProvider.get_author_history", "args": "input", "binding": "console_report" },
+        { "kind": "output", "raw": "console_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepointelIdeasBase", "steps": [
+        { "kind": "input", "raw": "ConsoleReportRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "Ncall", "raw": "RepointelAnalyticsProvider.get_ideas_base(input) -> console_report", "target": "RepointelAnalyticsProvider.get_ideas_base", "args": "input", "binding": "console_report" },
+        { "kind": "output", "raw": "console_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepointelLoci", "steps": [
+        { "kind": "input", "raw": "ConsoleReportRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "Ncall", "raw": "RepointelAnalyticsProvider.get_loci(input) -> console_report", "target": "RepointelAnalyticsProvider.get_loci", "args": "input", "binding": "console_report" },
+        { "kind": "output", "raw": "console_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepointelLociExtended", "steps": [
+        { "kind": "input", "raw": "ConsoleReportRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "Ncall", "raw": "RepointelAnalyticsProvider.get_loci_extended(input) -> console_report", "target": "RepointelAnalyticsProvider.get_loci_extended", "args": "input", "binding": "console_report" },
+        { "kind": "output", "raw": "console_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepointelReviewRisk", "steps": [
+        { "kind": "input", "raw": "ConsoleReportRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "Ncall", "raw": "RepointelAnalyticsProvider.get_review_risk(input) -> console_report", "target": "RepointelAnalyticsProvider.get_review_risk", "args": "input", "binding": "console_report" },
+        { "kind": "output", "raw": "console_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetRepointelReviewRiskMessages", "steps": [
+        { "kind": "input", "raw": "ConsoleReportRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "Ncall", "raw": "RepointelAnalyticsProvider.get_review_risk_messages(input) -> console_report", "target": "RepointelAnalyticsProvider.get_review_risk_messages", "args": "input", "binding": "console_report" },
+        { "kind": "output", "raw": "console_report", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListSzzRuns", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_szz_runs(input) -> szz_runs", "target": "MetadataCollectionRuntime.list_szz_runs", "args": "input", "binding": "szz_runs" },
+        { "kind": "output", "raw": "szz_runs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetSzzRun", "steps": [
+        { "kind": "input", "raw": "{ szz_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_szz_run(input) -> szz_run", "target": "MetadataCollectionRuntime.get_szz_run", "args": "input", "binding": "szz_run" },
+        { "kind": "output", "raw": "szz_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "DeleteSzzRun", "steps": [
+        { "kind": "input", "raw": "{ szz_run_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "admin", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.delete_szz_run(input) -> deleted", "target": "MetadataCollectionRuntime.delete_szz_run", "args": "input", "binding": "deleted" },
+        { "kind": "output", "raw": "none", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchSzzAnalyses", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.search_szz_runs(input) -> szz_runs", "target": "MetadataCollectionRuntime.search_szz_runs", "args": "input", "binding": "szz_runs" },
+        { "kind": "output", "raw": "szz_runs", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "AnalyzeSzzReview", "steps": [
+        { "kind": "input", "raw": "SzzAnalysisRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_szz_review_analysis(input) -> szz_analysis_request", "target": "MetadataCollectionRuntime.prepare_szz_review_analysis", "args": "input", "binding": "szz_analysis_request" },
+        { "kind": "Ncall", "raw": "SzzAnalysisProvider.analyze_review(szz_analysis_request) -> szz_provider_run", "target": "SzzAnalysisProvider.analyze_review", "args": "szz_analysis_request", "binding": "szz_provider_run" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.store_szz_analysis_result(input, szz_provider_run) -> szz_run", "target": "MetadataCollectionRuntime.store_szz_analysis_result", "args": "input, szz_provider_run", "binding": "szz_run" },
+        { "kind": "output", "raw": "szz_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "AnalyzeSzzBatch", "steps": [
+        { "kind": "input", "raw": "SzzAnalysisRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "writer", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.prepare_szz_batch_analysis(input) -> szz_analysis_request", "target": "MetadataCollectionRuntime.prepare_szz_batch_analysis", "args": "input", "binding": "szz_analysis_request" },
+        { "kind": "Ncall", "raw": "SzzAnalysisProvider.analyze_batch(szz_analysis_request) -> szz_provider_run", "target": "SzzAnalysisProvider.analyze_batch", "args": "szz_analysis_request", "binding": "szz_provider_run" },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.store_szz_analysis_result(input, szz_provider_run) -> szz_run", "target": "MetadataCollectionRuntime.store_szz_analysis_result", "args": "input, szz_provider_run", "binding": "szz_run" },
+        { "kind": "output", "raw": "szz_run", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "ListDownstreamCalls", "steps": [
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.list_downstream_calls(input) -> downstream_call_traces", "target": "MetadataCollectionRuntime.list_downstream_calls", "args": "input", "binding": "downstream_call_traces" },
+        { "kind": "output", "raw": "downstream_call_traces", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "GetDownstreamCall", "steps": [
+        { "kind": "input", "raw": "{ downstream_call_id: String }", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.get_downstream_call(input) -> downstream_call", "target": "MetadataCollectionRuntime.get_downstream_call", "args": "input", "binding": "downstream_call" },
+        { "kind": "output", "raw": "downstream_call", "target": null, "args": null, "binding": null }
+    ] },
+    { "operation": "SearchDownstreamCalls", "steps": [
+        { "kind": "input", "raw": "SearchRequest", "target": null, "args": null, "binding": null },
+        { "kind": "authz", "raw": "reader", "target": null, "args": null, "binding": null },
+        { "kind": "DGcall", "raw": "MetadataCollectionRuntime.search_downstream_calls(input) -> downstream_call_traces", "target": "MetadataCollectionRuntime.search_downstream_calls", "args": "input", "binding": "downstream_call_traces" },
+        { "kind": "output", "raw": "downstream_call_traces", "target": null, "args": null, "binding": null }
+    ] }
+  ]
+}

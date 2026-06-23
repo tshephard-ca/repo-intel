@@ -1,0 +1,129 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: repointel
+      POSTGRES_USER: repointel
+      POSTGRES_PASSWORD: ${REPOINTEL_POSTGRES_PASSWORD:-repointel}
+    ports:
+      - "127.0.0.1:15432:5432"
+    volumes:
+      - repointel-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U repointel -d repointel"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  repointel-facade:
+    build:
+      context: ../../generated/repointel
+      dockerfile: ../../projects/repointel-metadata-collection/Dockerfile.repointel
+    image: repointel-facade:local
+    environment:
+      REPOINTEL_STORAGE: postgres
+      REPOINTEL_DATABASE_URL: postgres://repointel:${REPOINTEL_POSTGRES_PASSWORD:-repointel}@postgres:5432/repointel
+      REPOINTEL_DATA_DIR: /data/repointel
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: "*"
+    ports:
+      - "127.0.0.1:18101:18081"
+    volumes:
+      - repointel-json-data:/data/repointel
+      - ${REPOINTEL_GIT_ROOT_HOST:-./.repointel-git}:/git:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  metadata-facade:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: repointel-metadata-facade:local
+    environment:
+      METADATA_COLLECTION_DATA_DIR: /data/metadata-collection
+      METADATA_COLLECTION_BASE_URL: http://metadata-facade:18080
+      METADATA_COLLECTION_AUTH_TOKENS_JSON: ${METADATA_COLLECTION_AUTH_TOKENS_JSON:?set METADATA_COLLECTION_AUTH_TOKENS_JSON}
+      METADATA_COLLECTION_REPOINTEL_TOKEN: ${METADATA_COLLECTION_REPOINTEL_TOKEN:?set METADATA_COLLECTION_REPOINTEL_TOKEN}
+      REPOINTEL_DATABASE_URL: postgres://repointel:${REPOINTEL_POSTGRES_PASSWORD:-repointel}@postgres:5432/repointel
+      METADATACOLLECTIONFACADE_PROVIDER_ENDPOINTS_JSON: >-
+        {"RepointelFacade":{"base_url":"http://repointel-facade:18081"},"RepointelAnalyticsProvider":{"base_url":"http://analytics-provider:18194"},"SzzAnalysisProvider":{"base_url":"http://szz-provider:18195"}}
+      METADATACOLLECTIONFACADE_REPOINTEL_ANALYTICS_PROVIDER_TOKEN: ${REPOINTEL_ANALYTICS_PROVIDER_TOKEN:?set REPOINTEL_ANALYTICS_PROVIDER_TOKEN}
+      METADATACOLLECTIONFACADE_REPOINTEL_SZZ_PROVIDER_TOKEN: ${REPOINTEL_SZZ_PROVIDER_TOKEN:?set REPOINTEL_SZZ_PROVIDER_TOKEN}
+    ports:
+      - "127.0.0.1:18102:18080"
+    volumes:
+      - metadata-collection-data:/data/metadata-collection
+    depends_on:
+      repointel-facade:
+        condition: service_started
+      analytics-provider:
+        condition: service_started
+      szz-provider:
+        condition: service_started
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    image: repointel-metadata-gateway:local
+    environment:
+      REPOINTEL_DEBUG_UI_HOST: 0.0.0.0
+      PORT: 18110
+      REPOINTEL_BASE_URL: http://repointel-facade:18081
+      METADATA_COLLECTION_BASE_URL: http://metadata-facade:18080
+    ports:
+      - "0.0.0.0:18110:18110"
+    depends_on:
+      metadata-facade:
+        condition: service_started
+      repointel-facade:
+        condition: service_started
+
+  analytics-provider:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    image: repointel-metadata-gateway:local
+    command: ["node", "ux/server.mjs", "--analytics-provider"]
+    environment:
+      REPOINTEL_DEBUG_UI_HOST: 0.0.0.0
+      PORT: 18194
+      REPOINTEL_DATABASE_URL: postgres://repointel:${REPOINTEL_POSTGRES_PASSWORD:-repointel}@postgres:5432/repointel
+      REPOINTEL_ANALYTICS_PROVIDER_TOKEN: ${REPOINTEL_ANALYTICS_PROVIDER_TOKEN:?set REPOINTEL_ANALYTICS_PROVIDER_TOKEN}
+      METADATA_COLLECTION_BASE_URL: http://metadata-facade:18080
+      METADATA_COLLECTION_GATEWAY_TOKEN: ${METADATA_COLLECTION_GATEWAY_TOKEN:?set METADATA_COLLECTION_GATEWAY_TOKEN}
+    expose:
+      - "18194"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  szz-provider:
+    build:
+      context: .
+      dockerfile: Dockerfile.szz-provider
+    image: repointel-metadata-szz-provider:local
+    environment:
+      HOST: 0.0.0.0
+      PORT: 18195
+      REPOINTEL_DATABASE_URL: postgres://repointel:${REPOINTEL_POSTGRES_PASSWORD:-repointel}@postgres:5432/repointel
+      REPOINTEL_SZZ_PROVIDER_TOKEN: ${REPOINTEL_SZZ_PROVIDER_TOKEN:?set REPOINTEL_SZZ_PROVIDER_TOKEN}
+      REPOINTEL_GIT_ROOT: /git
+      REPOINTEL_GERRIT_URL: ${REPOINTEL_GERRIT_URL:-}
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: "*"
+    expose:
+      - "18195"
+    volumes:
+      - ${REPOINTEL_GIT_ROOT_HOST:-./.repointel-git}:/git:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  repointel-postgres-data:
+  repointel-json-data:
+  metadata-collection-data:
