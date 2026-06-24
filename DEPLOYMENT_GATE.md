@@ -29,6 +29,23 @@ Docker/Keystone proof completed on June 23, 2026:
 - CI clean-room coverage added in `.github/workflows/compose-smoke.yml`:
   render compose config, build all images, start the stack, and probe gateway,
   Repointel health, and metadata health.
+- Gateway product-auth boundary added after the first deployment proof:
+  unauthenticated browser/API traffic is redirected or rejected, local bootstrap
+  login creates a signed HttpOnly SameSite session cookie, unsafe API calls
+  require CSRF, RBAC is enforced before proxying, and service bearer tokens are
+  injected only by the gateway.
+- Authenticated Docker gateway proof after rebuild: `127.0.0.1:18110` returned
+  unauthenticated session metadata, rejected unauthenticated API calls with 401,
+  redirected `/` to `/login`, accepted bootstrap admin login, returned
+  administrator RBAC plus CSRF token from `/auth/session`, rejected unsafe API
+  calls without CSRF, and proxied authenticated metadata health with gateway-held
+  credentials.
+- Browser credential stripping proof: metadata health with a bogus browser
+  `Authorization` header still returned 200 through the gateway because the
+  proxy replaces browser credentials with its internal scoped credential.
+- Remote-access proof after rebuild: host `192.168.1.86` reached
+  `http://192.168.1.86:18110/auth/session` and `/` on the published gateway
+  port.
 - Compose-owned Postgres became healthy and Repointel created
   `repointel_records` / `repointel_store_meta`.
 - Repointel ingested local OpenStack Keystone from `/git/keystone` using the
@@ -60,7 +77,8 @@ Required external input:
 - Provider endpoints for `RepointelFacade`, `RepointelAnalyticsProvider`, and
   `SzzAnalysisProvider`.
 - Secret injection path for metadata facade tokens, Repointel provider token,
-  analytics provider token, and SZZ provider token.
+  analytics provider token, SZZ provider token, gateway session secret, OIDC
+  client secret, and bootstrap-admin break-glass credential.
 - Approval to deploy or restart the affected services.
 
 Required live proof after input is available:
@@ -74,4 +92,5 @@ Required live proof after input is available:
   `/metadata-collection/szz-analyses:analyze-review` or
   `/metadata-collection/szz-analyses:analyze-batch`.
 - Logs showing no immediate provider/auth/routing errors.
+- Browser login flow proof with HTTPS-backed Secure session cookies.
 - Rollback path for the deployed services.

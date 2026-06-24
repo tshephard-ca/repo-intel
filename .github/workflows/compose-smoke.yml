@@ -25,17 +25,30 @@ jobs:
       - name: Smoke generated facades and gateway
         run: |
           set -euo pipefail
+          ready=0
           for attempt in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:18110/ >/dev/null \
+            if curl -fsS http://127.0.0.1:18110/healthz >/dev/null \
               && curl -fsS http://127.0.0.1:18101/healthz >/dev/null \
               && curl -fsS http://127.0.0.1:18102/healthz >/dev/null; then
-              exit 0
+              ready=1
+              break
             fi
             docker compose --env-file .env.docker.example ps
             sleep 2
           done
-          docker compose --env-file .env.docker.example logs --no-color
-          exit 1
+          if [ "$ready" != "1" ]; then
+            docker compose --env-file .env.docker.example logs --no-color
+            exit 1
+          fi
+          curl -fsS http://127.0.0.1:18110/auth/session | grep -q '"authenticated":false'
+          curl -fsS -c /tmp/repo-intel-ci-cookie.txt \
+            -H 'content-type: application/json' \
+            -d '{"username":"admin","password":"change-me-now"}' \
+            http://127.0.0.1:18110/auth/login/local \
+            | grep -q '"authenticated":true'
+          curl -fsS -b /tmp/repo-intel-ci-cookie.txt \
+            http://127.0.0.1:18110/auth/session \
+            | grep -q '"roles":\["administrator"\]'
 
       - name: Stop stack
         if: always()

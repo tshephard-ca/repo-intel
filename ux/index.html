@@ -14,8 +14,23 @@
         <button data-tab="topology">Repositories</button>
         <button data-tab="groups">Groups</button>
         <button data-tab="ingestion">Jobs</button>
-        <details class="connection-settings">
-          <summary>API</summary>
+        <a id="debugLink" class="debug-link" href="/debug" hidden>Debug</a>
+        <span id="sessionRole" class="session-chip"></span>
+        <button id="logoutButton">Sign out</button>
+      </nav>
+
+      <section class="workspace">
+        <section id="debugPanel" class="debug-panel debug-only" hidden>
+          <div class="section-head">
+            <div>
+              <h2>Gateway Debug</h2>
+              <p>Administrator-only API diagnostics for same-origin gateway calls.</p>
+            </div>
+            <div class="button-row">
+              <button id="healthCheck">Check APIs</button>
+              <button id="clearCalls">Clear</button>
+            </div>
+          </div>
           <div class="connection-grid">
             <label>
               <span>Repointel API path</span>
@@ -25,21 +40,14 @@
               <span>Metadata API path</span>
               <input id="metadataProxy" value="/api/metadata" />
             </label>
-            <label>
-              <span>Repointel token</span>
-              <input id="repointelToken" value="" />
-            </label>
-            <label>
-              <span>Metadata token</span>
-              <input id="metadataToken" value="" />
-            </label>
-            <button id="saveConfig" class="primary">Save</button>
-            <button id="healthCheck">Check</button>
           </div>
-        </details>
-      </nav>
+          <div id="healthPanel" class="stats-grid"></div>
+          <div class="debug-grid">
+            <div id="callLog" class="call-log"></div>
+            <pre id="browserResult" class="json-card debug-result"></pre>
+          </div>
+        </section>
 
-      <section class="workspace">
         <section id="review-risk" class="tab active">
           <div class="section-head review-risk-top-controls">
             <div>

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Repo Intel Login</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="login-body">
+    <main class="login-shell">
+      <section class="login-panel">
+        <div>
+          <h1>Repo Intel</h1>
+          <p id="loginMode">Sign in</p>
+        </div>
+        <form id="localLoginForm" class="login-form" hidden>
+          <label>
+            <span>Username</span>
+            <input name="username" autocomplete="username" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary" type="submit">Sign in</button>
+        </form>
+        <a id="oidcLogin" class="login-oidc" href="/auth/oidc/login" hidden>Sign in with OIDC</a>
+        <p id="loginError" class="login-error" role="alert"></p>
+      </section>
+    </main>
+    <script>
+      const form = document.querySelector("#localLoginForm");
+      const oidc = document.querySelector("#oidcLogin");
+      const error = document.querySelector("#loginError");
+      const mode = document.querySelector("#loginMode");
+
+      async function loadModes() {
+        const response = await fetch("/auth/session", { credentials: "same-origin" });
+        const session = await response.json();
+        if (session.authenticated) {
+          window.location.assign("/");
+          return;
+        }
+        form.hidden = !session.modes?.local;
+        oidc.hidden = !session.modes?.oidc;
+        if (!session.modes?.local && !session.modes?.oidc) {
+          mode.textContent = "No login provider configured";
+        }
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        error.textContent = "";
+        const body = Object.fromEntries(new FormData(form).entries());
+        const response = await fetch("/auth/login/local", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (response.ok) {
+          window.location.assign("/");
+          return;
+        }
+        const value = await response.json().catch(() => ({}));
+        error.textContent = value.message || "Sign in failed";
+      });
+
+      loadModes().catch(() => {
+        error.textContent = "Gateway unavailable";
+      });
+    </script>
+  </body>
+</html>

@@ -88,12 +88,12 @@ const state = {
   config: {
     repointelProxy: "/api/repointel",
     metadataProxy: "/api/metadata",
-    repointelToken: "",
-    metadataToken: "",
     analyticsAvailable: false,
     authorDensityMinCommits: 10,
     reviewerDensityMinApprovals: 10,
   },
+  session: null,
+  debugMode: false,
   data: {},
   selected: {},
   calls: [],
@@ -135,15 +135,52 @@ const state = {
 init();
 
 async function init() {
+  await loadSession();
+  if (!state.session?.authenticated) {
+    window.location.assign("/login");
+    return;
+  }
   loadLocalConfig();
   await loadServerConfig();
   bindNavigation();
   bindForms();
   bindActions();
   hydrateConfigInputs();
+  hydrateSessionUi();
   renderBrowserCollections();
   await refreshCore();
   activateInitialTab();
+}
+
+async function loadSession() {
+  const response = await fetch("/auth/session", { credentials: "same-origin" });
+  const session = await response.json();
+  state.session = session;
+  state.debugMode = Boolean(session.debugAllowed && window.location.pathname.startsWith("/debug"));
+}
+
+function hydrateSessionUi() {
+  const user = state.session?.user;
+  const roleNode = $("#sessionRole");
+  if (roleNode && user) {
+    const roles = user.roleLabels?.length ? user.roleLabels.join(", ") : "Authenticated";
+    roleNode.textContent = `${user.handle || user.subject_id} | ${roles}`;
+  }
+  const debugLink = $("#debugLink");
+  if (debugLink) debugLink.hidden = !state.session?.debugAllowed || state.debugMode;
+  $$(".debug-only").forEach((node) => {
+    node.hidden = !state.debugMode;
+  });
+  if (state.debugMode) renderCalls();
+}
+
+async function logout() {
+  await fetch("/auth/logout", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: csrfHeaders("POST"),
+  }).catch(() => {});
+  window.location.assign("/login");
 }
 
 function bindNavigation() {
@@ -229,6 +266,7 @@ function bindForms() {
 function bindActions() {
   $("#saveConfig")?.addEventListener("click", saveConfig);
   $("#healthCheck")?.addEventListener("click", refreshHealth);
+  $("#logoutButton")?.addEventListener("click", logout);
   $("#refreshAll")?.addEventListener("click", refreshAll);
   $("#refreshIdeas")?.addEventListener("click", refreshIdeasView);
   $("#refreshReviewRisk")?.addEventListener("click", refreshReviewRisk);
@@ -1431,7 +1469,7 @@ async function refreshAnalytics(options = {}) {
 function applyAuthorDensityThreshold() {
   state.config.authorDensityMinCommits = authorDensityMinCommits();
   state.config.reviewerDensityMinApprovals = reviewerDensityMinApprovals();
-  localStorage.setItem("repointel-debug-config", JSON.stringify(state.config));
+  saveLocalPreferences();
   refreshAnalytics();
 }
 
@@ -7284,35 +7322,40 @@ async function searchList(service, path, filters = {}, limit = 500) {
 
 async function api(service, method, path, body) {
   const base = service === "metadata" ? state.config.metadataProxy : state.config.repointelProxy;
-  const token = service === "metadata" ? state.config.metadataToken : state.config.repointelToken;
   const started = performance.now();
-  const entry = { service, method, path, body, started: new Date().toISOString() };
-  const headers = { "content-type": "application/json" };
-  if (token) headers.authorization = `Bearer ${token}`;
+  const entry = state.debugMode ? { service, method, path, body, started: new Date().toISOString() } : null;
+  const headers = { "content-type": "application/json", ...csrfHeaders(method) };
   try {
     const response = await fetch(`${base}${path}`, {
       method,
+      credentials: "same-origin",
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
     });
     const text = await response.text();
     const value = text ? parseJson(text, text) : null;
-    Object.assign(entry, {
-      status: response.status,
-      ms: performance.now() - started,
-      response: value,
-      ok: response.ok,
-    });
-    state.calls.unshift(entry);
-    entry.logged = true;
-    renderCalls();
+    if (entry) {
+      Object.assign(entry, {
+        status: response.status,
+        ms: performance.now() - started,
+        response: value,
+        ok: response.ok,
+      });
+      state.calls.unshift(entry);
+      entry.logged = true;
+      renderCalls();
+    }
     showRestToast(entry);
+    if (response.status === 401) {
+      window.location.assign("/login");
+      throw new Error("Login required");
+    }
     if (!response.ok) {
       throw new Error(value?.message || value?.error || `${method} ${path} failed with ${response.status}`);
     }
     return value;
   } catch (err) {
-    if (!entry.logged) {
+    if (entry && !entry.logged) {
       Object.assign(entry, { status: "ERR", ms: performance.now() - started, response: { error: err.message }, ok: false });
       state.calls.unshift(entry);
       renderCalls();
@@ -7323,6 +7366,7 @@ async function api(service, method, path, body) {
 }
 
 function showRestToast(call) {
+  if (!call) return;
   const status = String(call.status);
   const ms = Math.round(call.ms || 0);
   toast(`${call.method} ${call.path} -> ${status}`, !call.ok, `${ms}ms ${responseSummary(call.response)}`);
@@ -7364,6 +7408,12 @@ async function safeApi(service, method, path, body) {
   } catch (err) {
     return { ok: false, error: err.message, ms: performance.now() - started };
   }
+}
+
+function csrfHeaders(method = "GET") {
+  const upper = String(method || "GET").toUpperCase();
+  if (["GET", "HEAD", "OPTIONS"].includes(upper)) return {};
+  return state.session?.csrfToken ? { "x-csrf-token": state.session.csrfToken } : {};
 }
 
 function renderCalls() {
@@ -7748,15 +7798,29 @@ function escapeAttr(value) {
 }
 
 function loadLocalConfig() {
-  const saved = parseJson(localStorage.getItem("repointel-debug-config"), {});
-  state.config = { ...state.config, ...saved };
+  localStorage.removeItem("repointel-debug-config");
+  const saved = parseJson(localStorage.getItem("repo-intel-console-preferences"), {});
+  state.config = {
+    ...state.config,
+    authorDensityMinCommits: saved.authorDensityMinCommits || state.config.authorDensityMinCommits,
+    reviewerDensityMinApprovals: saved.reviewerDensityMinApprovals || state.config.reviewerDensityMinApprovals,
+  };
+}
+
+function saveLocalPreferences() {
+  localStorage.setItem("repo-intel-console-preferences", JSON.stringify({
+    authorDensityMinCommits: state.config.authorDensityMinCommits,
+    reviewerDensityMinApprovals: state.config.reviewerDensityMinApprovals,
+  }));
 }
 
 async function loadServerConfig() {
   try {
-    const headers = {};
-    if (state.config.metadataToken) headers.authorization = `Bearer ${state.config.metadataToken}`;
-    const response = await fetch("/api/metadata/console/config", { headers });
+    const response = await fetch("/api/metadata/console/config", { credentials: "same-origin" });
+    if (response.status === 401) {
+      window.location.assign("/login");
+      return;
+    }
     const config = await response.json();
     state.config.repointelProxy = sameOriginPath(state.config.repointelProxy, config.repointelProxy);
     state.config.metadataProxy = sameOriginPath(state.config.metadataProxy, config.metadataCollectionProxy);
@@ -7767,10 +7831,10 @@ async function loadServerConfig() {
 }
 
 function hydrateConfigInputs() {
-  $("#repointelProxy").value = state.config.repointelProxy;
-  $("#metadataProxy").value = state.config.metadataProxy;
-  $("#repointelToken").value = state.config.repointelToken;
-  $("#metadataToken").value = state.config.metadataToken;
+  const repointelProxy = $("#repointelProxy");
+  const metadataProxy = $("#metadataProxy");
+  if (repointelProxy) repointelProxy.value = state.config.repointelProxy;
+  if (metadataProxy) metadataProxy.value = state.config.metadataProxy;
   const minCommits = $("#authorDensityMinCommits");
   if (minCommits) minCommits.value = String(state.config.authorDensityMinCommits || 10);
   const minApprovals = $("#reviewerDensityMinApprovals");
@@ -7779,15 +7843,13 @@ function hydrateConfigInputs() {
 
 function saveConfig() {
   state.config = {
-    repointelProxy: sameOriginPath($("#repointelProxy").value, "/api/repointel"),
-    metadataProxy: sameOriginPath($("#metadataProxy").value, "/api/metadata"),
-    repointelToken: $("#repointelToken").value.trim(),
-    metadataToken: $("#metadataToken").value.trim(),
+    repointelProxy: sameOriginPath($("#repointelProxy")?.value, "/api/repointel"),
+    metadataProxy: sameOriginPath($("#metadataProxy")?.value, "/api/metadata"),
     analyticsAvailable: state.config.analyticsAvailable,
     authorDensityMinCommits: authorDensityMinCommits(),
     reviewerDensityMinApprovals: reviewerDensityMinApprovals(),
   };
-  localStorage.setItem("repointel-debug-config", JSON.stringify(state.config));
+  saveLocalPreferences();
   hydrateConfigInputs();
   toast("Configuration saved");
 }

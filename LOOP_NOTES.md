@@ -33,3 +33,16 @@
   `COMPLETION_AUDIT.md`, `DEPLOYMENT_GATE.md`, and
   `docs/state-ownership.md`.
 - Evidence: final verification commands listed in `COMPLETION_AUDIT.md`.
+
+## Loop 4
+
+- Focus: remove browser-held service tokens and make the gateway a product
+  authentication boundary.
+- Gaps found: browser token inputs, token persistence in `localStorage`, raw
+  call logging in ordinary workflows, unauthenticated gateway proxying, and no
+  product RBAC before service calls.
+- Changes made: added gateway sessions, OIDC login, bootstrap admin login, RBAC,
+  CSRF checks, server-side scoped credential injection, a login page, and
+  administrator-only debug diagnostics.
+- Evidence: Node syntax checks, Compose config, and gateway curl smoke tests
+  listed in `COMPLETION_AUDIT.md`.

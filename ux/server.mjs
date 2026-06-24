@@ -1,4 +1,5 @@
 import http from "node:http";
+import crypto from "node:crypto";
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
@@ -18,6 +19,38 @@ const analyticsProviderToken = firstEnv([
   "FRONTPLANE_AUTH_REPOINTEL_ANALYTICS_PROVIDER_TOKEN",
 ]);
 const analyticsProviderMode = process.argv[2] === "--analytics-provider";
+const configuredSessionSecret = firstEnv(["REPO_INTEL_SESSION_SECRET", "METADATA_COLLECTION_SESSION_SECRET"]);
+const sessionSecret = configuredSessionSecret || crypto.randomBytes(32).toString("hex");
+const sessionCookieName = process.env.REPO_INTEL_SESSION_COOKIE || "repo_intel_session";
+const sessionTtlSeconds = parsePositiveInt(process.env.REPO_INTEL_SESSION_TTL_SECONDS, 8 * 60 * 60);
+const sessionSameSite = ["Strict", "Lax", "None"].includes(process.env.REPO_INTEL_COOKIE_SAMESITE || "")
+  ? process.env.REPO_INTEL_COOKIE_SAMESITE
+  : "Lax";
+const sessionCookieSecureMode = String(process.env.REPO_INTEL_COOKIE_SECURE || "auto").trim().toLowerCase();
+const bootstrapAdminUsername = firstEnv([
+  "REPO_INTEL_BOOTSTRAP_ADMIN_USERNAME",
+  "REPOINTEL_BOOTSTRAP_ADMIN_USERNAME",
+]) || "admin";
+const bootstrapAdminPassword = String(process.env.REPO_INTEL_BOOTSTRAP_ADMIN_PASSWORD || "");
+const bootstrapAdminPasswordHash = firstEnv([
+  "REPO_INTEL_BOOTSTRAP_ADMIN_PASSWORD_HASH",
+  "REPOINTEL_BOOTSTRAP_ADMIN_PASSWORD_HASH",
+]);
+const localLoginEnabled = Boolean(bootstrapAdminPassword || bootstrapAdminPasswordHash);
+const oidcConfig = {
+  issuer: stripSlash(firstEnv(["REPO_INTEL_OIDC_ISSUER_URL", "OIDC_ISSUER_URL"])),
+  clientId: firstEnv(["REPO_INTEL_OIDC_CLIENT_ID", "OIDC_CLIENT_ID"]),
+  clientSecret: firstEnv(["REPO_INTEL_OIDC_CLIENT_SECRET", "OIDC_CLIENT_SECRET"]),
+  redirectUri: firstEnv(["REPO_INTEL_OIDC_REDIRECT_URI", "OIDC_REDIRECT_URI"]),
+  scope: firstEnv(["REPO_INTEL_OIDC_SCOPE", "OIDC_SCOPE"]) || "openid profile email",
+  rolesClaim: firstEnv(["REPO_INTEL_OIDC_ROLES_CLAIM", "OIDC_ROLES_CLAIM"]) || "roles",
+  defaultRole: normalizeProductRole(firstEnv(["REPO_INTEL_OIDC_DEFAULT_ROLE", "OIDC_DEFAULT_ROLE"]) || "read_only_viewer"),
+};
+const oidcEnabled = Boolean(oidcConfig.issuer && oidcConfig.clientId && oidcConfig.redirectUri);
+const sessions = new Map();
+const oidcLoginStates = new Map();
+let oidcDiscoveryCache = null;
+let oidcJwksCache = null;
 const keywordScoreCap = 160;
 const reviewRiskCaps = {
   security: 320,
@@ -49,31 +82,89 @@ if (analyticsProviderMode) {
 }
 
 function startGateway() {
+  if (!configuredSessionSecret) {
+    console.warn("REPO_INTEL_SESSION_SECRET is not set; using an ephemeral in-memory session secret for this process.");
+  }
+  if (!localLoginEnabled && !oidcEnabled) {
+    console.warn("No login provider is configured. Set OIDC env vars or REPO_INTEL_BOOTSTRAP_ADMIN_PASSWORD.");
+  }
   const server = http.createServer(async (req, res) => {
     try {
-      if (req.url === "/api/config") {
-        return proxy(req, res, collectionBase, "/metadata-collection/console/config");
+      const url = new URL(req.url || "/", "http://localhost");
+      if (url.pathname === "/healthz") {
+        return json(res, {
+          status: "ok",
+          service: "repo-intel-gateway",
+          auth: "session-cookie",
+          oidcEnabled,
+          localLoginEnabled,
+        });
       }
-      if (req.url?.startsWith("/api/repointel/") || req.url === "/api/repointel") {
-        return proxy(req, res, repointelBase, req.url.replace(/^\/api\/repointel/, "") || "/");
+      if (url.pathname.startsWith("/auth/")) {
+        return handleAuth(req, res, url);
       }
-      if (req.url?.startsWith("/api/metadata/") || req.url === "/api/metadata") {
-        const tail = req.url.replace(/^\/api\/metadata/, "") || "/";
-        if (tail === "/healthz" || tail.startsWith("/healthz?") || tail === "/metrics" || tail.startsWith("/metrics?")) {
-          return proxy(req, res, collectionBase, tail);
+      if (url.pathname === "/login" || url.pathname === "/login.html") {
+        return serveStatic(req, res, "login.html");
+      }
+      if (url.pathname === "/styles.css") {
+        return serveStatic(req, res);
+      }
+      if (url.pathname === "/api/config") {
+        const session = requireAuthenticated(req, res);
+        if (!session) return;
+        const policy = authorizeApiRequest(req, res, "metadata", "/console/config", session);
+        if (!policy) return;
+        return proxy(req, res, collectionBase, "/metadata-collection/console/config", {
+          service: "metadata",
+          scope: policy.downstreamScope,
+          user: session.user,
+        });
+      }
+      if (url.pathname.startsWith("/api/repointel/") || url.pathname === "/api/repointel") {
+        const session = requireAuthenticated(req, res);
+        if (!session) return;
+        const tailPath = url.pathname.replace(/^\/api\/repointel/, "") || "/";
+        const policy = authorizeApiRequest(req, res, "repointel", tailPath, session);
+        if (!policy) return;
+        return proxy(req, res, repointelBase, `${tailPath}${url.search}`, {
+          service: "repointel",
+          scope: policy.downstreamScope,
+          user: session.user,
+        });
+      }
+      if (url.pathname.startsWith("/api/metadata/") || url.pathname === "/api/metadata") {
+        const session = requireAuthenticated(req, res);
+        if (!session) return;
+        const tailPath = url.pathname.replace(/^\/api\/metadata/, "") || "/";
+        const policy = authorizeApiRequest(req, res, "metadata", tailPath, session);
+        if (!policy) return;
+        if (tailPath === "/healthz" || tailPath === "/metrics") {
+          return proxy(req, res, collectionBase, `${tailPath}${url.search}`, {
+            service: "metadata",
+            scope: policy.downstreamScope,
+            user: session.user,
+          });
         }
-        return proxy(req, res, collectionBase, `/metadata-collection${tail}`);
+        return proxy(req, res, collectionBase, `/metadata-collection${tailPath}${url.search}`, {
+          service: "metadata",
+          scope: policy.downstreamScope,
+          user: session.user,
+        });
+      }
+      const session = requireAuthenticated(req, res, { html: true });
+      if (!session) return;
+      if ((url.pathname === "/debug" || url.pathname.startsWith("/debug/")) && !userHasAnyProductRole(session.user, ["administrator"])) {
+        return htmlForbidden(res);
       }
       return serveStatic(req, res);
     } catch (err) {
-      res.writeHead(500, { "content-type": "application/json; charset=utf-8" });
-      res.end(JSON.stringify({ error: "DebugConsoleError", message: String(err?.message || err) }));
+      writeJson(res, 500, { error: "GatewayError", message: String(err?.message || err) });
     }
   });
 
   server.listen(port, host, () => {
-    console.log(`Repointel debug console gateway listening on http://${host}:${port}`);
-    console.log(`Browser API paths stay same-origin: /api/repointel and /api/metadata`);
+    console.log(`Repo Intel gateway listening on http://${host}:${port}`);
+    console.log(`Browser API paths stay same-origin and session-authenticated: /api/repointel and /api/metadata`);
     console.log(`Internal RepointelFacade target -> ${repointelBase}`);
     console.log(`Internal MetadataCollectionFacade target -> ${collectionBase}/metadata-collection`);
   });
@@ -190,31 +281,41 @@ async function runConsoleQuery(queryName, input = {}) {
   }
 }
 
-async function serveStatic(req, res) {
+async function serveStatic(req, res, fileOverride = "") {
   const url = new URL(req.url || "/", "http://localhost");
   const safePath = normalize(decodeURIComponent(url.pathname))
     .replace(/^(\.\.[/\\])+/, "")
     .replace(/^[/\\]+/, "");
-  const filePath = join(root, safePath || "index.html");
+  const filePath = join(root, fileOverride || safePath || "index.html");
   try {
     const body = await readFile(filePath);
     res.writeHead(200, {
       "content-type": types[extname(filePath)] || "application/octet-stream",
       "cache-control": "no-store",
+      ...securityHeaders(),
     });
     res.end(body);
   } catch {
     const body = await readFile(join(root, "index.html"));
-    res.writeHead(200, { "content-type": types[".html"], "cache-control": "no-store" });
+    res.writeHead(200, { "content-type": types[".html"], "cache-control": "no-store", ...securityHeaders() });
     res.end(body);
   }
 }
 
-async function proxy(req, res, base, path) {
+async function proxy(req, res, base, path, options = {}) {
   const target = `${base}${path}`;
-  const headers = { ...req.headers };
-  delete headers.host;
-  delete headers.connection;
+  const token = downstreamToken(options.service, options.scope);
+  if (!token) {
+    writeJson(res, 503, {
+      error: "GatewayCredentialUnavailable",
+      message: `No internal ${options.scope || "reader"} credential is configured for ${options.service || "upstream"}.`,
+    });
+    return;
+  }
+  const headers = proxyHeaders(req.headers);
+  headers.authorization = `Bearer ${token}`;
+  if (options.user?.subject_id) headers["x-repo-intel-user"] = String(options.user.subject_id);
+  if (options.user?.roles?.length) headers["x-repo-intel-roles"] = options.user.roles.join(",");
   const body = await readBody(req);
   try {
     const upstream = await fetch(target, {
@@ -226,16 +327,606 @@ async function proxy(req, res, base, path) {
     const responseHeaders = {
       "content-type": upstream.headers.get("content-type") || "application/json; charset=utf-8",
       "cache-control": "no-store",
+      ...securityHeaders(),
     };
     res.writeHead(upstream.status, responseHeaders);
     res.end(responseBody);
   } catch (err) {
-    res.writeHead(502, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
-    res.end(JSON.stringify({
+    writeJson(res, 502, {
       error: "UpstreamUnavailable",
-      message: `Could not reach ${target}: ${String(err?.message || err)}`,
-    }));
+      message: "Could not reach the upstream service through the gateway.",
+      detail: userHasAnyProductRole(options.user, ["administrator"]) ? String(err?.message || err) : undefined,
+    });
   }
+}
+
+async function handleAuth(req, res, url) {
+  if (url.pathname === "/auth/session" && req.method === "GET") {
+    const session = currentSession(req);
+    return json(res, {
+      authenticated: Boolean(session),
+      user: session ? publicUser(session.user) : null,
+      csrfToken: session?.csrfToken || "",
+      debugAllowed: session ? userHasAnyProductRole(session.user, ["administrator"]) : false,
+      modes: { local: localLoginEnabled, oidc: oidcEnabled },
+    });
+  }
+  if (url.pathname === "/auth/login/local" && req.method === "POST") {
+    return loginLocal(req, res);
+  }
+  if (url.pathname === "/auth/logout" && (req.method === "POST" || req.method === "GET")) {
+    const session = currentSession(req);
+    if (session) sessions.delete(session.id);
+    return writeJson(res, 200, { ok: true }, { "set-cookie": clearSessionCookie(req) });
+  }
+  if (url.pathname === "/auth/oidc/login" && req.method === "GET") {
+    return beginOidcLogin(req, res);
+  }
+  if (url.pathname === "/auth/oidc/callback" && req.method === "GET") {
+    return completeOidcLogin(req, res, url);
+  }
+  writeJson(res, 404, { error: "NotFound", message: "Unknown authentication route." });
+}
+
+async function loginLocal(req, res) {
+  if (!localLoginEnabled) {
+    writeJson(res, 404, { error: "LocalLoginDisabled", message: "Bootstrap administrator login is not configured." });
+    return;
+  }
+  const body = await readJsonBody(req);
+  const username = String(body.username || "").trim();
+  const password = String(body.password || "");
+  if (!constantTimeEqual(username, bootstrapAdminUsername) || !verifyBootstrapPassword(password)) {
+    writeJson(res, 401, { error: "Unauthorized", message: "Invalid username or password." });
+    return;
+  }
+  const session = createSession({
+    subject_id: `bootstrap:${username}`,
+    handle: username,
+    roles: ["administrator"],
+    auth_provider: "bootstrap",
+  });
+  writeJson(res, 200, {
+    authenticated: true,
+    user: publicUser(session.user),
+    csrfToken: session.csrfToken,
+    debugAllowed: true,
+  }, { "set-cookie": sessionCookie(req, session.id, sessionTtlSeconds) });
+}
+
+async function beginOidcLogin(req, res) {
+  if (!oidcEnabled) {
+    writeJson(res, 404, { error: "OidcDisabled", message: "OIDC login is not configured." });
+    return;
+  }
+  const discovery = await oidcDiscovery();
+  const state = randomBase64Url(32);
+  const nonce = randomBase64Url(32);
+  const verifier = randomBase64Url(48);
+  oidcLoginStates.set(state, {
+    nonce,
+    verifier,
+    expiresAt: Date.now() + 10 * 60 * 1000,
+  });
+  pruneOidcStates();
+  const authUrl = new URL(discovery.authorization_endpoint);
+  authUrl.searchParams.set("response_type", "code");
+  authUrl.searchParams.set("client_id", oidcConfig.clientId);
+  authUrl.searchParams.set("redirect_uri", oidcConfig.redirectUri);
+  authUrl.searchParams.set("scope", oidcConfig.scope);
+  authUrl.searchParams.set("state", state);
+  authUrl.searchParams.set("nonce", nonce);
+  authUrl.searchParams.set("code_challenge_method", "S256");
+  authUrl.searchParams.set("code_challenge", base64UrlEncode(crypto.createHash("sha256").update(verifier).digest()));
+  redirect(res, 302, authUrl.toString());
+}
+
+async function completeOidcLogin(req, res, url) {
+  if (!oidcEnabled) {
+    writeJson(res, 404, { error: "OidcDisabled", message: "OIDC login is not configured." });
+    return;
+  }
+  if (url.searchParams.get("error")) {
+    writeJson(res, 401, {
+      error: "OidcError",
+      message: url.searchParams.get("error_description") || url.searchParams.get("error") || "OIDC login failed.",
+    });
+    return;
+  }
+  const state = String(url.searchParams.get("state") || "");
+  const stateRecord = oidcLoginStates.get(state);
+  oidcLoginStates.delete(state);
+  if (!stateRecord || stateRecord.expiresAt <= Date.now()) {
+    writeJson(res, 401, { error: "OidcStateInvalid", message: "OIDC state is missing or expired." });
+    return;
+  }
+  const code = String(url.searchParams.get("code") || "");
+  if (!code) {
+    writeJson(res, 401, { error: "OidcCodeMissing", message: "OIDC callback did not include an authorization code." });
+    return;
+  }
+  const discovery = await oidcDiscovery();
+  const tokenResponse = await exchangeOidcCode(discovery, code, stateRecord.verifier);
+  const claims = await verifyOidcIdToken(discovery, tokenResponse.id_token, stateRecord.nonce);
+  const roles = oidcProductRoles(claims);
+  const session = createSession({
+    subject_id: String(claims.sub),
+    handle: String(claims.preferred_username || claims.email || claims.name || claims.sub),
+    roles,
+    auth_provider: "oidc",
+  });
+  redirect(res, 303, "/", { "set-cookie": sessionCookie(req, session.id, sessionTtlSeconds) });
+}
+
+function requireAuthenticated(req, res, options = {}) {
+  const session = currentSession(req);
+  if (session) return session;
+  if (options.html) {
+    redirect(res, 303, "/login");
+  } else {
+    writeJson(res, 401, { error: "Unauthorized", message: "Login required." });
+  }
+  return null;
+}
+
+function currentSession(req) {
+  const signed = parseCookies(req.headers.cookie || "")[sessionCookieName];
+  const id = verifySignedValue(signed);
+  if (!id) return null;
+  const session = sessions.get(id);
+  if (!session) return null;
+  if (session.expiresAt <= Date.now()) {
+    sessions.delete(id);
+    return null;
+  }
+  session.lastSeenAt = Date.now();
+  return session;
+}
+
+function createSession(user) {
+  const id = randomBase64Url(32);
+  const roles = normalizeProductRoles(user.roles);
+  const session = {
+    id,
+    user: {
+      subject_id: String(user.subject_id || ""),
+      handle: String(user.handle || user.subject_id || ""),
+      roles,
+      auth_provider: String(user.auth_provider || ""),
+    },
+    csrfToken: randomBase64Url(32),
+    createdAt: Date.now(),
+    lastSeenAt: Date.now(),
+    expiresAt: Date.now() + sessionTtlSeconds * 1000,
+  };
+  sessions.set(id, session);
+  pruneSessions();
+  return session;
+}
+
+function publicUser(user) {
+  return {
+    subject_id: user.subject_id,
+    handle: user.handle,
+    roles: user.roles,
+    roleLabels: user.roles.map(productRoleLabel),
+    auth_provider: user.auth_provider,
+  };
+}
+
+function authorizeApiRequest(req, res, service, path, session) {
+  if (!requireCsrf(req, res, session)) return null;
+  const policy = apiAccessPolicy(service, req.method, path);
+  if (!userHasAnyProductRole(session.user, policy.productRoles)) {
+    writeJson(res, 403, {
+      error: "Forbidden",
+      message: `This action requires ${policy.productRoles.map(productRoleLabel).join(" or ")}.`,
+    });
+    return null;
+  }
+  return policy;
+}
+
+function requireCsrf(req, res, session) {
+  if (safeHttpMethod(req.method)) return true;
+  const supplied = String(req.headers["x-csrf-token"] || "");
+  if (session?.csrfToken && constantTimeEqual(supplied, session.csrfToken)) return true;
+  writeJson(res, 403, { error: "CsrfRejected", message: "Missing or invalid CSRF token." });
+  return false;
+}
+
+function apiAccessPolicy(service, method, path) {
+  const upper = String(method || "GET").toUpperCase();
+  const normalizedPath = String(path || "/");
+  if (safeHttpMethod(upper) || readLikeAction(upper, normalizedPath)) {
+    return { productRoles: ["read_only_viewer"], downstreamScope: "reader" };
+  }
+  if (upper === "DELETE") {
+    return { productRoles: ["administrator"], downstreamScope: "admin" };
+  }
+  if (service === "repointel") {
+    if (startsWithAny(normalizedPath, ["/repository-groups", "/repositories", "/sources", "/ingestion-jobs"])) {
+      return { productRoles: ["repository_manager"], downstreamScope: "writer" };
+    }
+    if (startsWithAny(normalizedPath, ["/normalizers", "/metadata", "/relationships"])) {
+      return { productRoles: ["security_analyst"], downstreamScope: "writer" };
+    }
+    return { productRoles: ["administrator"], downstreamScope: "admin" };
+  }
+  if (service === "metadata") {
+    if (startsWithAny(normalizedPath, ["/runs", "/evidence-hits", "/szz-analyses", "/keyword-configs"])) {
+      return { productRoles: ["security_analyst"], downstreamScope: "writer" };
+    }
+    if (startsWithAny(normalizedPath, ["/coverage-reports", "/scores", "/score-buckets"])) {
+      return { productRoles: ["security_analyst"], downstreamScope: "writer" };
+    }
+    if (startsWithAny(normalizedPath, ["/profiles", "/scenarios", "/dictionaries", "/extractor-bundles", "/extractor-rules", "/downstream-services"])) {
+      return { productRoles: ["administrator"], downstreamScope: "admin" };
+    }
+  }
+  return { productRoles: ["administrator"], downstreamScope: "admin" };
+}
+
+function readLikeAction(method, path) {
+  if (String(method || "").toUpperCase() !== "POST") return false;
+  return /:(search|plan|latest|resolve|compute)$/.test(path) || path.includes(":search");
+}
+
+function safeHttpMethod(method) {
+  return ["GET", "HEAD", "OPTIONS"].includes(String(method || "").toUpperCase());
+}
+
+function startsWithAny(value, prefixes) {
+  return prefixes.some((prefix) => value === prefix || value.startsWith(`${prefix}/`) || value.startsWith(`${prefix}:`));
+}
+
+function userHasAnyProductRole(user, requiredRoles) {
+  const roles = new Set(normalizeProductRoles(user?.roles || []));
+  if (roles.has("administrator")) return true;
+  if (requiredRoles.includes("read_only_viewer")) return roles.size > 0;
+  return requiredRoles.some((role) => roles.has(role));
+}
+
+function normalizeProductRoles(values) {
+  const roles = new Set();
+  for (const value of Array.isArray(values) ? values : [values]) {
+    const normalized = normalizeProductRole(value);
+    if (normalized) roles.add(normalized);
+  }
+  return Array.from(roles);
+}
+
+function normalizeProductRole(value) {
+  const role = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  const aliases = {
+    admin: "administrator",
+    administrator: "administrator",
+    repo_admin: "administrator",
+    repository_admin: "administrator",
+    repository_manager: "repository_manager",
+    repo_manager: "repository_manager",
+    manager: "repository_manager",
+    security_analyst: "security_analyst",
+    analyst: "security_analyst",
+    writer: "security_analyst",
+    read_only_viewer: "read_only_viewer",
+    readonly_viewer: "read_only_viewer",
+    read_only: "read_only_viewer",
+    viewer: "read_only_viewer",
+    reader: "read_only_viewer",
+    read: "read_only_viewer",
+  };
+  return aliases[role] || "";
+}
+
+function productRoleLabel(role) {
+  return {
+    administrator: "Administrator",
+    repository_manager: "Repository manager",
+    security_analyst: "Security analyst",
+    read_only_viewer: "Read-only viewer",
+  }[role] || role;
+}
+
+function downstreamToken(service, scope = "reader") {
+  const normalizedScope = ["reader", "writer", "admin"].includes(scope) ? scope : "reader";
+  if (service === "metadata") {
+    if (normalizedScope === "admin") {
+      return firstEnv(["METADATA_COLLECTION_ADMIN_TOKEN", "METADATA_COLLECTION_GATEWAY_ADMIN_TOKEN", "METADATA_COLLECTION_GATEWAY_TOKEN", "METADATA_COLLECTION_TOKEN"]);
+    }
+    if (normalizedScope === "writer") {
+      return firstEnv(["METADATA_COLLECTION_WRITER_TOKEN", "METADATA_COLLECTION_GATEWAY_WRITER_TOKEN", "METADATA_COLLECTION_GATEWAY_TOKEN", "METADATA_COLLECTION_TOKEN"]);
+    }
+    return firstEnv(["METADATA_COLLECTION_READER_TOKEN", "METADATA_COLLECTION_GATEWAY_READER_TOKEN", "METADATA_COLLECTION_GATEWAY_TOKEN", "METADATA_COLLECTION_TOKEN"]);
+  }
+  if (service === "repointel") {
+    if (normalizedScope === "admin") {
+      return firstEnv(["REPOINTEL_ADMIN_TOKEN", "REPOINTEL_GATEWAY_ADMIN_TOKEN", "REPOINTEL_GATEWAY_TOKEN", "METADATA_COLLECTION_REPOINTEL_TOKEN", "REPOINTEL_TOKEN"]);
+    }
+    if (normalizedScope === "writer") {
+      return firstEnv(["REPOINTEL_WRITER_TOKEN", "REPOINTEL_GATEWAY_WRITER_TOKEN", "REPOINTEL_GATEWAY_TOKEN", "METADATA_COLLECTION_REPOINTEL_TOKEN", "REPOINTEL_TOKEN"]);
+    }
+    return firstEnv(["REPOINTEL_READER_TOKEN", "REPOINTEL_GATEWAY_READER_TOKEN", "REPOINTEL_GATEWAY_TOKEN", "METADATA_COLLECTION_REPOINTEL_TOKEN", "REPOINTEL_TOKEN"]);
+  }
+  return "";
+}
+
+function proxyHeaders(incoming) {
+  const headers = { ...incoming };
+  for (const key of [
+    "host",
+    "connection",
+    "keep-alive",
+    "proxy-authenticate",
+    "proxy-authorization",
+    "te",
+    "trailer",
+    "transfer-encoding",
+    "upgrade",
+    "authorization",
+    "cookie",
+    "x-csrf-token",
+  ]) {
+    delete headers[key];
+  }
+  return headers;
+}
+
+function verifyBootstrapPassword(password) {
+  if (bootstrapAdminPasswordHash) {
+    const hash = bootstrapAdminPasswordHash.trim();
+    if (hash.startsWith("sha256:")) {
+      const expected = hash.slice("sha256:".length);
+      const actual = crypto.createHash("sha256").update(password).digest("hex");
+      return constantTimeEqual(actual, expected);
+    }
+    if (hash.startsWith("pbkdf2-sha256:")) {
+      const [, iterationsRaw, salt, expected] = hash.split(":");
+      const iterations = Number(iterationsRaw || 0);
+      if (!iterations || !salt || !expected) return false;
+      const actual = crypto.pbkdf2Sync(password, salt, iterations, 32, "sha256").toString("hex");
+      return constantTimeEqual(actual, expected);
+    }
+    return false;
+  }
+  return constantTimeEqual(password, bootstrapAdminPassword);
+}
+
+async function oidcDiscovery() {
+  if (oidcDiscoveryCache && oidcDiscoveryCache.expiresAt > Date.now()) return oidcDiscoveryCache.value;
+  const response = await fetch(`${oidcConfig.issuer}/.well-known/openid-configuration`, {
+    headers: { accept: "application/json" },
+  });
+  if (!response.ok) throw new Error(`OIDC discovery failed with HTTP ${response.status}`);
+  const value = await response.json();
+  for (const key of ["issuer", "authorization_endpoint", "token_endpoint", "jwks_uri"]) {
+    if (!value[key]) throw new Error(`OIDC discovery is missing ${key}`);
+  }
+  oidcDiscoveryCache = { value, expiresAt: Date.now() + 10 * 60 * 1000 };
+  return value;
+}
+
+async function exchangeOidcCode(discovery, code, verifier) {
+  const body = new URLSearchParams();
+  body.set("grant_type", "authorization_code");
+  body.set("code", code);
+  body.set("redirect_uri", oidcConfig.redirectUri);
+  body.set("client_id", oidcConfig.clientId);
+  body.set("code_verifier", verifier);
+  if (oidcConfig.clientSecret) body.set("client_secret", oidcConfig.clientSecret);
+  const response = await fetch(discovery.token_endpoint, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/x-www-form-urlencoded",
+    },
+    body,
+  });
+  const value = await response.json().catch(() => ({}));
+  if (!response.ok || !value.id_token) {
+    throw new Error(value.error_description || value.error || `OIDC token exchange failed with HTTP ${response.status}`);
+  }
+  return value;
+}
+
+async function verifyOidcIdToken(discovery, idToken, expectedNonce) {
+  const parts = String(idToken || "").split(".");
+  if (parts.length !== 3) throw new Error("OIDC id_token is not a JWT.");
+  const [encodedHeader, encodedPayload, encodedSignature] = parts;
+  const header = JSON.parse(base64UrlDecodeBuffer(encodedHeader).toString("utf8"));
+  const claims = JSON.parse(base64UrlDecodeBuffer(encodedPayload).toString("utf8"));
+  if (header.alg !== "RS256") {
+    throw new Error(`Unsupported OIDC id_token alg ${header.alg || "unknown"}; configure an RS256 provider.`);
+  }
+  const key = await oidcPublicKey(discovery, header.kid);
+  const verifier = crypto.createVerify("RSA-SHA256");
+  verifier.update(`${encodedHeader}.${encodedPayload}`);
+  verifier.end();
+  if (!verifier.verify(key, base64UrlDecodeBuffer(encodedSignature))) {
+    throw new Error("OIDC id_token signature verification failed.");
+  }
+  const now = Math.floor(Date.now() / 1000);
+  if (claims.iss !== discovery.issuer) throw new Error("OIDC id_token issuer mismatch.");
+  const audience = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
+  if (!audience.includes(oidcConfig.clientId)) throw new Error("OIDC id_token audience mismatch.");
+  if (audience.length > 1 && claims.azp && claims.azp !== oidcConfig.clientId) {
+    throw new Error("OIDC id_token authorized party mismatch.");
+  }
+  if (!claims.exp || Number(claims.exp) < now - 60) throw new Error("OIDC id_token is expired.");
+  if (claims.nonce !== expectedNonce) throw new Error("OIDC id_token nonce mismatch.");
+  if (!claims.sub) throw new Error("OIDC id_token is missing sub.");
+  return claims;
+}
+
+async function oidcPublicKey(discovery, kid) {
+  if (!oidcJwksCache || oidcJwksCache.expiresAt <= Date.now()) {
+    const response = await fetch(discovery.jwks_uri, { headers: { accept: "application/json" } });
+    if (!response.ok) throw new Error(`OIDC JWKS fetch failed with HTTP ${response.status}`);
+    oidcJwksCache = { value: await response.json(), expiresAt: Date.now() + 10 * 60 * 1000 };
+  }
+  const keys = Array.isArray(oidcJwksCache.value.keys) ? oidcJwksCache.value.keys : [];
+  const jwk = keys.find((key) => !kid || key.kid === kid);
+  if (!jwk) throw new Error("OIDC JWKS does not contain the id_token signing key.");
+  return crypto.createPublicKey({ key: jwk, format: "jwk" });
+}
+
+function oidcProductRoles(claims) {
+  const rawValues = [
+    ...claimValues(claims, oidcConfig.rolesClaim),
+    ...claimValues(claims, "groups"),
+    ...claimValues(claims, "realm_access.roles"),
+  ];
+  const mapped = new Set();
+  const configuredMappings = {
+    administrator: envList("REPO_INTEL_OIDC_ADMIN_ROLES"),
+    repository_manager: envList("REPO_INTEL_OIDC_REPOSITORY_MANAGER_ROLES"),
+    security_analyst: envList("REPO_INTEL_OIDC_SECURITY_ANALYST_ROLES"),
+    read_only_viewer: envList("REPO_INTEL_OIDC_READ_ONLY_VIEWER_ROLES"),
+  };
+  for (const value of rawValues) {
+    const normalized = normalizeProductRole(value);
+    if (normalized) mapped.add(normalized);
+    for (const [role, configuredValues] of Object.entries(configuredMappings)) {
+      if (configuredValues.some((item) => constantTimeEqual(String(value), item))) mapped.add(role);
+    }
+  }
+  if (!mapped.size && oidcConfig.defaultRole) mapped.add(oidcConfig.defaultRole);
+  return Array.from(mapped);
+}
+
+function claimValues(source, path) {
+  const value = String(path || "")
+    .split(".")
+    .filter(Boolean)
+    .reduce((item, key) => (item && typeof item === "object" ? item[key] : undefined), source);
+  if (Array.isArray(value)) return value.map((item) => String(item));
+  if (typeof value === "string") {
+    return value.split(/[,\s]+/).map((item) => item.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+function envList(name) {
+  return String(process.env[name] || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parseCookies(header) {
+  const cookies = {};
+  for (const part of String(header || "").split(";")) {
+    const index = part.indexOf("=");
+    if (index === -1) continue;
+    const key = part.slice(0, index).trim();
+    const value = part.slice(index + 1).trim();
+    if (key) cookies[key] = decodeURIComponent(value);
+  }
+  return cookies;
+}
+
+function sessionCookie(req, sessionId, maxAgeSeconds) {
+  return cookieHeader(req, sessionCookieName, signValue(sessionId), maxAgeSeconds);
+}
+
+function clearSessionCookie(req) {
+  return cookieHeader(req, sessionCookieName, "", 0);
+}
+
+function cookieHeader(req, name, value, maxAgeSeconds) {
+  const attrs = [
+    `${name}=${encodeURIComponent(value)}`,
+    "Path=/",
+    "HttpOnly",
+    `SameSite=${sessionSameSite}`,
+    `Max-Age=${Math.max(0, Number(maxAgeSeconds || 0))}`,
+  ];
+  if (cookieShouldBeSecure(req)) attrs.push("Secure");
+  return attrs.join("; ");
+}
+
+function cookieShouldBeSecure(req) {
+  if (["1", "true", "yes", "on"].includes(sessionCookieSecureMode)) return true;
+  if (["0", "false", "no", "off"].includes(sessionCookieSecureMode)) return false;
+  return Boolean(req.socket?.encrypted) || String(req.headers["x-forwarded-proto"] || "").split(",")[0].trim() === "https";
+}
+
+function signValue(value) {
+  return `${value}.${hmac(value)}`;
+}
+
+function verifySignedValue(value) {
+  const text = String(value || "");
+  const index = text.lastIndexOf(".");
+  if (index <= 0) return "";
+  const raw = text.slice(0, index);
+  const signature = text.slice(index + 1);
+  return constantTimeEqual(hmac(raw), signature) ? raw : "";
+}
+
+function hmac(value) {
+  return base64UrlEncode(crypto.createHmac("sha256", sessionSecret).update(String(value)).digest());
+}
+
+function randomBase64Url(size) {
+  return base64UrlEncode(crypto.randomBytes(size));
+}
+
+function base64UrlEncode(buffer) {
+  return Buffer.from(buffer)
+    .toString("base64")
+    .replaceAll("+", "-")
+    .replaceAll("/", "_")
+    .replace(/=+$/g, "");
+}
+
+function base64UrlDecodeBuffer(value) {
+  const text = String(value || "").replaceAll("-", "+").replaceAll("_", "/");
+  const padded = `${text}${"=".repeat((4 - (text.length % 4)) % 4)}`;
+  return Buffer.from(padded, "base64");
+}
+
+async function readJsonBody(req) {
+  const body = await readBody(req);
+  if (!body.length) return {};
+  return JSON.parse(body.toString("utf8"));
+}
+
+function pruneSessions() {
+  const now = Date.now();
+  for (const [id, session] of sessions.entries()) {
+    if (session.expiresAt <= now) sessions.delete(id);
+  }
+}
+
+function pruneOidcStates() {
+  const now = Date.now();
+  for (const [state, value] of oidcLoginStates.entries()) {
+    if (value.expiresAt <= now) oidcLoginStates.delete(state);
+  }
+}
+
+function redirect(res, status, location, headers = {}) {
+  res.writeHead(status, {
+    location,
+    "cache-control": "no-store",
+    ...securityHeaders(),
+    ...headers,
+  });
+  res.end();
+}
+
+function htmlForbidden(res) {
+  res.writeHead(403, {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": "no-store",
+    ...securityHeaders(),
+  });
+  res.end("<!doctype html><title>Forbidden</title><p>Administrator access required.</p>");
 }
 
 function queryRepointelAnalytics(options = {}) {
@@ -5738,11 +6429,24 @@ function sqlLiteral(value) {
   return `'${String(value ?? "").replaceAll("'", "''")}'`;
 }
 
-function json(res, value, headers = {}) {
-  res.writeHead(200, {
+function writeJson(res, status, value, headers = {}) {
+  res.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
+    ...securityHeaders(),
     ...headers,
   });
   res.end(JSON.stringify(value));
+}
+
+function json(res, value, headers = {}) {
+  writeJson(res, 200, value, headers);
+}
+
+function securityHeaders() {
+  return {
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "same-origin",
+  };
 }

@@ -67,6 +67,67 @@ export REPOINTEL_SZZ_PROVIDER_TOKEN='<szz-provider-token>'
 export METADATACOLLECTIONFACADE_REPOINTEL_SZZ_PROVIDER_TOKEN='<szz-provider-token>'
 ```
 
+## Gateway Product Authentication
+
+The browser-facing gateway is a backend-for-frontend. Browser clients do not
+hold Repointel, metadata facade, analytics, or worker bearer tokens. Users sign
+in to the gateway, receive a signed HttpOnly SameSite session cookie, and the
+gateway injects internal scoped credentials when proxying to:
+
+- `RepointelFacade`
+- `MetadataCollectionFacade`
+- `RepointelAnalyticsProvider`
+- `SzzAnalysisProvider`
+
+Configure OIDC for normal product authentication:
+
+```bash
+export REPO_INTEL_SESSION_SECRET='<64+ random bytes>'
+export REPO_INTEL_COOKIE_SECURE=true
+export REPO_INTEL_OIDC_ISSUER_URL='https://idp.example.com/realms/repo-intel'
+export REPO_INTEL_OIDC_CLIENT_ID='repo-intel'
+export REPO_INTEL_OIDC_CLIENT_SECRET='<oidc-client-secret>'
+export REPO_INTEL_OIDC_REDIRECT_URI='https://repo-intel.example.com/auth/oidc/callback'
+```
+
+For offline installations, set a bootstrap administrator credential:
+
+```bash
+export REPO_INTEL_BOOTSTRAP_ADMIN_USERNAME=admin
+export REPO_INTEL_BOOTSTRAP_ADMIN_PASSWORD='<temporary-bootstrap-password>'
+```
+
+The gateway recognizes four product roles:
+
+- Administrator
+- Repository manager
+- Security analyst
+- Read-only viewer
+
+OIDC role/group claims can use those names directly, or deployments can map
+IdP-specific claim values with `REPO_INTEL_OIDC_ADMIN_ROLES`,
+`REPO_INTEL_OIDC_REPOSITORY_MANAGER_ROLES`,
+`REPO_INTEL_OIDC_SECURITY_ANALYST_ROLES`, and
+`REPO_INTEL_OIDC_READ_ONLY_VIEWER_ROLES`.
+The built-in verifier validates RS256 ID tokens through the provider JWKS and
+checks issuer, audience, expiry, and nonce.
+
+Internal service credentials stay in server environment variables. Use scoped
+tokens where available:
+
+```bash
+export METADATA_COLLECTION_READER_TOKEN='<metadata-reader-token>'
+export METADATA_COLLECTION_WRITER_TOKEN='<metadata-writer-token>'
+export METADATA_COLLECTION_ADMIN_TOKEN='<metadata-admin-token>'
+export REPOINTEL_READER_TOKEN='<repointel-reader-token>'
+export REPOINTEL_WRITER_TOKEN='<repointel-writer-token>'
+export REPOINTEL_ADMIN_TOKEN='<repointel-admin-token>'
+```
+
+`REPO_INTEL_COOKIE_SECURE=false` is only for local HTTP compose testing. Product
+deployments should terminate HTTPS before the gateway or run the gateway
+directly over HTTPS and keep `REPO_INTEL_COOKIE_SECURE=true`.
+
 Configure SZZ provider dependencies explicitly. `REPOINTEL_GIT_ROOT` is only a
 fallback; repository source records with `ingestion_policy.local_path` take
 precedence. `REPOINTEL_GERRIT_URL` is required when SZZ backfills missing
@@ -196,6 +257,13 @@ Create local config and replace the placeholder tokens:
 cp .env.docker.example .env
 ```
 
+The example file includes a local bootstrap administrator so a clean clone can
+start without an external identity provider. Replace
+`REPO_INTEL_SESSION_SECRET`, `REPO_INTEL_BOOTSTRAP_ADMIN_PASSWORD`, metadata
+tokens, Repointel tokens, analytics provider token, and SZZ provider token
+before sharing the deployment. For HTTPS deployments, set
+`REPO_INTEL_COOKIE_SECURE=true`.
+
 Then build and run:
 
 ```bash
@@ -223,21 +291,27 @@ internal to the compose network. Mount a local repository root with
 the mounted `/git` tree inside the Repointel and SZZ containers.
 
 For another machine on the same network, open
-`http://<docker-host-ip>:18110`. The host firewall must allow inbound TCP
-`18110`; no direct remote access to Postgres or the generated facades is needed
-for the browser UI because the gateway proxies `/api/repointel/*` and
-`/api/metadata/*` server-side.
+`http://<docker-host-ip>:18110` and sign in through the gateway. The host
+firewall must allow inbound TCP `18110`; no direct remote access to Postgres or
+the generated facades is needed for the browser UI because the gateway proxies
+`/api/repointel/*` and `/api/metadata/*` server-side with internal credentials.
 
 ## Debug Console
 
-The verification UI is in `projects/repointel-metadata-collection/ux`. It is intentionally an operator console: it shows REST calls, resource trees, ingestion job member reads, normalizer tests, metadata-collection runs, evidence hits, downstream traces, and raw persisted collections.
+The verification UI is in `projects/repointel-metadata-collection/ux`. Product
+workflows run behind the gateway session. Administrator-only diagnostics are
+available at `/debug`; that route can show same-origin request/response details
+for gateway troubleshooting, but ordinary workflows do not expose service
+tokens, internal service URLs, or raw request bodies.
 
 The UI server is the single browser-facing gateway. The browser only calls same-origin paths:
 
 - `/api/repointel/*`
 - `/api/metadata/*`
 
-Those paths are proxied server-side to the two local facades, so the Repointel and metadata-collection API ports can stay bound to `127.0.0.1` and do not need firewall exposure.
+Those paths are session-authenticated and proxied server-side to the two local
+facades. The Repointel and metadata-collection API ports can stay bound to
+`127.0.0.1` and do not need firewall exposure.
 
 Aggregate analytics are declared in `frontplane.fp` under
 `/metadata-collection/console/...` and served through
@@ -284,6 +358,14 @@ cargo run --manifest-path generated/repointel/Cargo.toml -- --host 127.0.0.1 --p
 ```bash
 REPOINTEL_BASE_URL=http://127.0.0.1:18101 \
 METADATA_COLLECTION_BASE_URL=http://127.0.0.1:18102 \
+REPO_INTEL_SESSION_SECRET='<64+ random bytes>' \
+REPO_INTEL_BOOTSTRAP_ADMIN_PASSWORD='<temporary-bootstrap-password>' \
+METADATA_COLLECTION_READER_TOKEN='<metadata-reader-token>' \
+METADATA_COLLECTION_WRITER_TOKEN='<metadata-writer-token>' \
+METADATA_COLLECTION_ADMIN_TOKEN='<metadata-admin-token>' \
+REPOINTEL_READER_TOKEN='<repointel-reader-token>' \
+REPOINTEL_WRITER_TOKEN='<repointel-writer-token>' \
+REPOINTEL_ADMIN_TOKEN='<repointel-admin-token>' \
 node projects/repointel-metadata-collection/ux/server.mjs
 ```
 
